@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Table 1</title>
+<!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
+    <link rel="stylesheet" href="ind.css">
+</head>
+<body>
+
+<div class="container-fluid text-center">
+    <h3> Profit List </h3>
+    <div class="m-2">
+        <a class="h4" th:href="@{/new}"><h3>New Profit Attribute</h3></a>
+    </div>
+</div>
+
+<div th:if="${message}" class="alert alert-success">
+    [[${message}]]
+</div>
+
+<div class="snippet-container mtb-3">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>January</th>
+                <th>February</th>
+                <th>March</th>
+                <th>April</th>
+                <th>May</th>
+                <th>June</th>
+                <th>July</th>
+                <th>August</th>
+                <th>September</th>
+                <th>October</th>
+                <th>November</th>
+                <th>December</th>
+                <th>Year</th>
+                <th>Setting</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="profits:${listProfits}">
+                <td th:text="${profits.article}">article</td>
+                <td th:text="${profits.january}"></td>
+                <td th:text="${profits.february}"></td>
+                <td th:text="${profits.march}"></td>
+                <td th:text="${profits.april}"></td>
+                <td th:text="${profits.may}"></td>
+                <td th:text="${profits.june}"></td>
+                <td th:text="${profits.july}"></td>
+                <td th:text="${profits.august}"></td>
+                <td th:text="${profits.september}"></td>
+                <td th:text="${profits.october}"></td>
+                <td th:text="${profits.november}"></td>
+                <td th:text="${profits.december}"></td>
+                <td th:text="${profits.year}"></td>
+                <td>
+                    <a class="h4 mr-3" th:href="@{'/edit/' + ${profits.article}}">Edit</a>
+                    <a class="h4"  th:href="@{'/delete/' + ${profits.article}}">Delete</a>
+                </td>
+            </tr>
+                    <tr>
+                    <tr th:each="total:${listProfitTotal}">
+                        <td th:text="${total.article}">article</td>
+                        <td th:text="${total.january}"></td>
+                        <td th:text="${total.february}"></td>
+                        <td th:text="${total.march}"></td>
+                        <td th:text="${total.april}"></td>
+                        <td th:text="${total.may}"></td>
+                        <td th:text="${total.june}"></td>
+                        <td th:text="${total.july}"></td>
+                        <td th:text="${total.august}"></td>
+                        <td th:text="${total.september}"></td>
+                        <td th:text="${total.october}"></td>
+                        <td th:text="${total.november}"></td>
+                        <td th:text="${total.december}"></td>
+                        <td th:text="${total.year}"></td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
