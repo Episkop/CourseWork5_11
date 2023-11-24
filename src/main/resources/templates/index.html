@@ -59,7 +59,7 @@
                 <td th:text="${profits.december}"></td>
                 <td th:text="${profits.year}"></td>
                 <td>
-                    <a class="h4 mr-3" th:href="@{'/edit/' + ${profits.article}}">Edit</a>
+                    <a class="h4 mr-3" th:href="@{'/update/' + ${profits.article}}">Edit</a>
                     <a class="h4"  th:href="@{'/delete/' + ${profits.article}}">Delete</a>
                 </td>
             </tr>
@@ -85,5 +85,81 @@
     </div>
 </div>
 
+
+<div class="container-fluid text-center">
+    <h3> Spending List </h3>
+    <div class="m-2">
+        <a class="h4" th:href="@{/newSpending}"><h3>New Spending Attribute</h3></a>
+    </div>
+</div>
+
+<div th:if="${message}" class="alert alert-success">
+    [[${message}]]
+</div>
+
+<div class="snippet-container mtb-3">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>January</th>
+                <th>February</th>
+                <th>March</th>
+                <th>April</th>
+                <th>May</th>
+                <th>June</th>
+                <th>July</th>
+                <th>August</th>
+                <th>September</th>
+                <th>October</th>
+                <th>November</th>
+                <th>December</th>
+                <th>Year</th>
+                <th>Setting</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="Spending:${listSpending}">
+                <td th:text="${Spending.article}">article</td>
+                <td th:text="${Spending.january}"></td>
+                <td th:text="${Spending.february}"></td>
+                <td th:text="${Spending.march}"></td>
+                <td th:text="${Spending.april}"></td>
+                <td th:text="${Spending.may}"></td>
+                <td th:text="${Spending.june}"></td>
+                <td th:text="${Spending.july}"></td>
+                <td th:text="${Spending.august}"></td>
+                <td th:text="${Spending.september}"></td>
+                <td th:text="${Spending.october}"></td>
+                <td th:text="${Spending.november}"></td>
+                <td th:text="${Spending.december}"></td>
+                <td th:text="${Spending.year}"></td>
+                <td>
+                    <a class="h4 mr-3" th:href="@{'/updateSpending/' + ${Spending.article}}">Edit</a>
+                    <a class="h4"  th:href="@{'/deleteSpending/' + ${Spending.article}}">Delete</a>
+                </td>
+            </tr>
+            <tr>
+            <tr th:each="total:${listSpendingTotal}">
+                <td th:text="${total.article}">article</td>
+                <td th:text="${total.january}"></td>
+                <td th:text="${total.february}"></td>
+                <td th:text="${total.march}"></td>
+                <td th:text="${total.april}"></td>
+                <td th:text="${total.may}"></td>
+                <td th:text="${total.june}"></td>
+                <td th:text="${total.july}"></td>
+                <td th:text="${total.august}"></td>
+                <td th:text="${total.september}"></td>
+                <td th:text="${total.october}"></td>
+                <td th:text="${total.november}"></td>
+                <td th:text="${total.december}"></td>
+                <td th:text="${total.year}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

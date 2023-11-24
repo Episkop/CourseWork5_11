@@ -1,0 +1,95 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Profit</title>
+  <link rel="stylesheet"  type="text/css" href="ind.css">
+  <!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
+</head>
+<body>
+<div class="container-fluid text-center">
+  <h1>Edit Spending</h1>
+  <form th:action="@{/saveUpdateSpending/{article}(article=${spending.getArticle()})}" th:method="Post" th:object="${spending}">
+
+    <!--        <input type="hidden" th:field="*{id} ">-->
+    <div class="snippet-container mtb-3">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>January</th>
+            <th>February</th>
+            <th>March</th>
+            <th>April</th>
+            <th>May</th>
+            <th>June</th>
+            <th>July</th>
+            <th>August</th>
+            <th>September</th>
+            <th>October</th>
+            <th>November</th>
+            <th>December</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th><label>
+              <input type="text" id="article" th:field="*{article}" class="fieldInput" required minlength="2" />
+            </label></th>
+            <th><label>
+              <input type="number" th:id="january" th:field="*{january}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{february}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{march}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{april}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{may}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{june}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{july}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{august}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{september}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{october}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{november}" class="fieldInput" />
+            </label></th>
+            <th><label>
+              <input type="number" th:field="*{december}" class="fieldInput" />
+            </label></th>
+          </tr>
+
+
+          </tbody>
+        </table>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary m-2">Save</button>
+        <button type="button" class="btn btn-secondary m-2" onclick="cancelForm()">Cancel</button>
+      </div>
+    </div>
+  </form>
+
+</div>
+<script type="text/javascript">
+  function cancelForm() {
+    window.location = "[[@{/profit}]]";
+  }
+</script>
+</body>
+</html>

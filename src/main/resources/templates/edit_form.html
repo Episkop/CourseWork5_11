@@ -9,7 +9,7 @@
 <body>
 <div class="container-fluid text-center">
     <h1>Edit Profit</h1>
-    <form th:action="@{'/edit/' + ${article}}" method="post" th:object="${profit}">
+    <form th:action="@{/saveUpdate/{article}(article=${profit.getArticle()})}" th:method="Post" th:object="${profit}">
 
 <!--        <input type="hidden" th:field="*{id} ">-->
         <div class="snippet-container mtb-3">
