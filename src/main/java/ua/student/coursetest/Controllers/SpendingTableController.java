@@ -34,7 +34,7 @@ public class SpendingTableController {
     public String save(@ModelAttribute("spending") SpendingModel model, RedirectAttributes ra) {//добавил @modelAttribute и стало сохранять
         try {
             spendingService.saveSpending(model);
-            ra.addAttribute("message", "The new Line with article " + model.getArticle() + "has been saved successfully.");
+            ra.addFlashAttribute("message", "The new Line with article " + model.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
         } catch (AlreadyExistException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -70,7 +70,7 @@ public class SpendingTableController {
     public String update(@ModelAttribute("spending") SpendingModel spendingModel,@PathVariable ("article") String article, RedirectAttributes ra) {
         try {
             spendingService.updateSpending(spendingModel);
-            ra.addAttribute("message", "The new Line with article " + spendingModel.getArticle() + "has been saved successfully.");
+            ra.addFlashAttribute("message", "The new Line with article " + spendingModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
         } catch (NotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -56,7 +56,34 @@ public class ProfitService {
 
     public void saveProfit(ProfitModel model) throws AlreadyExistException {
         if (profitRepository.findByArticle(model.getArticle()) == null) {
-            profitRepository.save(ProfitEntity.fromModel(model));
+            ProfitModel profitModel = new ProfitModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+            if (model.getJanuary() != null)
+                profitModel.setJanuary(model.getJanuary());
+            if (model.getFebruary() != null)
+            profitModel.setFebruary(model.getFebruary());
+            if (model.getMarch() != null)
+                profitModel.setMarch(model.getMarch());
+            if (model.getApril() != null)
+            profitModel.setApril(model.getApril());
+            if (model.getMay() != null)
+                profitModel.setMay(model.getMay());
+            if (model.getJune() != null)
+            profitModel.setJune(model.getJune());
+            if (model.getJuly() != null)
+                profitModel.setJuly(model.getJuly());
+            if (model.getAugust() != null)
+            profitModel.setAugust(model.getAugust());
+            if (model.getSeptember() != null)
+                profitModel.setSeptember(model.getSeptember());
+            if (model.getOctober() != null)
+            profitModel.setOctober(model.getOctober());
+            if (model.getNovember() != null)
+                profitModel.setNovember(model.getNovember());
+            if (model.getDecember() != null)
+            profitModel.setDecember(model.getDecember());
+            if (model.getYear() != null)
+                profitModel.setYear(model.getYear());
+            profitRepository.save(ProfitEntity.fromModel(profitModel));
         }
 //        if (profitEntityRepository.findByArticle(model.getArticle()) != null) {
 //            ProfitEntity profitModel = profitEntityRepository.findByArticle(model.getArticle());

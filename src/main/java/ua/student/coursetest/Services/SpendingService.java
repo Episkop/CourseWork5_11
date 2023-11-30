@@ -2,6 +2,7 @@ package ua.student.coursetest.Services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.student.coursetest.Entity.ProfitEntity;
 import ua.student.coursetest.Entity.SpendingEntity;
 import ua.student.coursetest.Entity.SpendingTotalEntity;
 import ua.student.coursetest.Exception.AlreadyExistException;
@@ -57,7 +58,34 @@ public class SpendingService {
 
     public void saveSpending(SpendingModel model) throws AlreadyExistException {
         if (spendingRepository.findByArticle(model.getArticle()) == null) {
-            spendingRepository.save(SpendingEntity.fromModel(model));
+            SpendingModel spendingModel = new SpendingModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+            if (model.getJanuary() != null)
+                spendingModel.setJanuary(model.getJanuary());
+            if (model.getFebruary() != null)
+                spendingModel.setFebruary(model.getFebruary());
+            if (model.getMarch() != null)
+                spendingModel.setMarch(model.getMarch());
+            if (model.getApril() != null)
+                spendingModel.setApril(model.getApril());
+            if (model.getMay() != null)
+                spendingModel.setMay(model.getMay());
+            if (model.getJune() != null)
+                spendingModel.setJune(model.getJune());
+            if (model.getJuly() != null)
+                spendingModel.setJuly(model.getJuly());
+            if (model.getAugust() != null)
+                spendingModel.setAugust(model.getAugust());
+            if (model.getSeptember() != null)
+                spendingModel.setSeptember(model.getSeptember());
+            if (model.getOctober() != null)
+                spendingModel.setOctober(model.getOctober());
+            if (model.getNovember() != null)
+                spendingModel.setNovember(model.getNovember());
+            if (model.getDecember() != null)
+                spendingModel.setDecember(model.getDecember());
+            if (model.getYear() != null)
+                spendingModel.setYear(model.getYear());
+            spendingRepository.save(SpendingEntity.fromModel(spendingModel));
         }
 //        if (profitEntityRepository.findByArticle(model.getArticle()) != null) {
 //            ProfitEntity profitModel = profitEntityRepository.findByArticle(model.getArticle());

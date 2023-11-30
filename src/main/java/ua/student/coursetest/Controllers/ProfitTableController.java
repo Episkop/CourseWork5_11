@@ -58,7 +58,7 @@ public class ProfitTableController {
     public String save(@ModelAttribute("profit") ProfitModel model, RedirectAttributes ra) {//добавил @modelAttribute и стало сохранять
         try {
             profitService.saveProfit(model);
-            ra.addAttribute("message", "The new Line with article " + model.getArticle() + "has been saved successfully.");
+            ra.addFlashAttribute("message", "The new Line with article " + model.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
         } catch (AlreadyExistException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -94,9 +94,9 @@ public class ProfitTableController {
     public String update(@ModelAttribute("profit") ProfitModel profitModel,@PathVariable ("article") String article, RedirectAttributes ra) {
         try {
             profitService.updateProfit(profitModel);
-            ra.addAttribute("message", "The new Line with article " + profitModel.getArticle() + "has been saved successfully.");
+            ra.addFlashAttribute("message", "The new Line with article " + profitModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
         } catch (NotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
         return "redirect:/profit";
     }
