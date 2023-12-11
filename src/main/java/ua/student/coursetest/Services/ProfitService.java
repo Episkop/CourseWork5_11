@@ -1,7 +1,8 @@
 package ua.student.coursetest.Services;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.student.coursetest.Controllers.HandlerUpdate;
 import ua.student.coursetest.Entity.ProfitEntity;
 import ua.student.coursetest.Entity.ProfitTotalEntity;
 import ua.student.coursetest.Exception.AlreadyExistException;
@@ -14,17 +15,21 @@ import ua.student.coursetest.Repository.ProfitTotalRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-@Controller
+@Service
 public class ProfitService {
 
     private final ProfitRepository profitRepository;
     private final ProfitTotalRepository profitTotalRepository;
 
+    private final HandlerUpdate update;
+
     public ProfitService(ProfitRepository profitRepository,
-                         ProfitTotalRepository profitTotalRepository) {
+                         ProfitTotalRepository profitTotalRepository, HandlerUpdate update) {
         this.profitRepository = profitRepository;
         this.profitTotalRepository = profitTotalRepository;
+        this.update = update;
     }
 
     @Transactional(readOnly = true)
@@ -33,6 +38,8 @@ public class ProfitService {
         List<ProfitEntity> list = profitRepository.findAll();
         if (list.isEmpty())
             throw new DBIsEmptyException("Data Base Profit is empty!");
+        list.removeIf(a->a.getArticle().equals("Balance at the beginning"));
+        list.removeIf(a->a.getArticle().equals("Opening balance"));
         list.forEach(x -> modelList.add(x.toModel()));
         return modelList;
     }
@@ -54,62 +61,45 @@ public class ProfitService {
         throw new NotFoundException("Could not find line with article " + article);
     }
 
+    public void startTable(ProfitModel model) {
+        if (profitRepository.findByArticle(model.getArticle()) == null) {
+            profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model)));
+        }
+    }
+
     public void saveProfit(ProfitModel model) throws AlreadyExistException {
         if (profitRepository.findByArticle(model.getArticle()) == null) {
-            ProfitModel profitModel = new ProfitModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-            if (model.getJanuary() != null)
+            ProfitModel profitModel = new ProfitModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+            if (model.getJanuary() != null)//todo
                 profitModel.setJanuary(model.getJanuary());
             if (model.getFebruary() != null)
-            profitModel.setFebruary(model.getFebruary());
+                profitModel.setFebruary(model.getFebruary());
             if (model.getMarch() != null)
                 profitModel.setMarch(model.getMarch());
             if (model.getApril() != null)
-            profitModel.setApril(model.getApril());
+                profitModel.setApril(model.getApril());
             if (model.getMay() != null)
                 profitModel.setMay(model.getMay());
             if (model.getJune() != null)
-            profitModel.setJune(model.getJune());
+                profitModel.setJune(model.getJune());
             if (model.getJuly() != null)
                 profitModel.setJuly(model.getJuly());
             if (model.getAugust() != null)
-            profitModel.setAugust(model.getAugust());
+                profitModel.setAugust(model.getAugust());
             if (model.getSeptember() != null)
                 profitModel.setSeptember(model.getSeptember());
             if (model.getOctober() != null)
-            profitModel.setOctober(model.getOctober());
+                profitModel.setOctober(model.getOctober());
             if (model.getNovember() != null)
                 profitModel.setNovember(model.getNovember());
             if (model.getDecember() != null)
-            profitModel.setDecember(model.getDecember());
+                profitModel.setDecember(model.getDecember());
             if (model.getYear() != null)
                 profitModel.setYear(model.getYear());
             profitRepository.save(ProfitEntity.fromModel(profitModel));
+            counterProfit();
         }
-//        if (profitEntityRepository.findByArticle(model.getArticle()) != null) {
-//            ProfitEntity profitModel = profitEntityRepository.findByArticle(model.getArticle());
-//            profitModel.setJanuary(model.getJanuary());
-//            profitModel.setFebruary(model.getFebruary());
-//            profitModel.setMarch(model.getMarch());
-//            profitModel.setApril(model.getApril());
-//            profitModel.setMay(model.getMay());
-//            profitModel.setJune(model.getJune());
-//            profitModel.setJuly(model.getJuly());
-//            profitModel.setAugust(model.getAugust());
-//            profitModel.setSeptember(model.getSeptember());
-//            profitModel.setOctober(model.getOctober());
-//            profitModel.setNovember(model.getNovember());
-//            profitModel.setDecember(model.getDecember());
-//            profitEntityRepository.save(profitModel);
-
-//            for (int i = 0; i < 12; i++) {
-//                for (int j = 0; j < 1; j++) {
-//                    countSum();
-//                }
-//                balance();
-//            }
-//            countSumLine();
-//            profitEntityRepository.save(profitModel);
-//        }
     }
 
     @Transactional
@@ -127,28 +117,25 @@ public class ProfitService {
         if (profitModel == null) {
             return;
         }
-        profitModel.setJanuary(model.getJanuary());
-        profitModel.setFebruary(model.getFebruary());
-        profitModel.setMarch(model.getMarch());
-        profitModel.setApril(model.getApril());
-        profitModel.setMay(model.getMay());
-        profitModel.setJune(model.getJune());
-        profitModel.setJuly(model.getJuly());
-        profitModel.setAugust(model.getAugust());
-        profitModel.setSeptember(model.getSeptember());
-        profitModel.setOctober(model.getOctober());
-        profitModel.setNovember(model.getNovember());
-        profitModel.setDecember(model.getDecember());
-
-//        for (int i = 0; i < 12; i++) {
-//                for (int j = 0; j < 1; j++) {
-//                    countSum();
-//                }
-//                balance();
-//            }
-//            countSumLine();
-        profitRepository.save(ProfitEntity.fromModel(profitModel));
+        profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model, profitModel)));
+        counterProfit();
     }
+
+    public ProfitModel findStartUpBalance(String article) throws NotFoundException {
+        ProfitEntity profit = profitRepository.findByArticle("Opening balance");
+        if (profit != null) {
+            return profit.toModel();
+        }
+        throw new NotFoundException("Could not find line with article " + article);
+    }
+//    public void startUpBalance(ProfitModel model) throws NotFoundException{
+//        ProfitModel profitModel = profitRepository.findByArticle(model.getArticle()).toModel();
+//        if (!profitModel.getArticle().equals("Opening balance")) {
+//            return;
+//        }
+//        profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model, profitModel)));
+//        counterProfit();
+//    }
 
     @Transactional
     public void countSumLine() {
@@ -192,58 +179,79 @@ public class ProfitService {
     public void balance() {
         ProfitEntity profitRest = profitRepository.findByArticle("Balance at the beginning");
         Double february = profitRepository.restForFebruary();
-        if (profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() == 0 || profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() != 0)
-            ;
+        if (profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() == 0
+                || profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() != 0)
+            profitRest.setFebruary(0.0);
         else
             profitRest.setFebruary(february);
+
         Double march = profitRepository.restForMarch();
-        if (profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() == 0 || profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() != 0)
-            ;
+        if (profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() == 0
+                || profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() != 0)
+            profitRest.setMarch(0.0);
         else
             profitRest.setMarch(march);
+
         Double april = profitRepository.restForApril();
-        if (profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() == 0 || profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() != 0)
-            ;
+        if (profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() == 0
+                || profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() != 0)
+            profitRest.setApril(0.0);
         else
             profitRest.setApril(april);
+
         Double may = profitRepository.restForMay();
-        if (profitRest.getApril() == 0 && may == 0 && profitRest.getMay() == 0 || profitRest.getApril() == 0 && may == 0 && profitRest.getMay() != 0)
-            ;
+        if (profitRest.getApril() == 0 && may == 0 && profitRest.getMay() == 0
+                || profitRest.getApril() == 0 && may == 0 && profitRest.getMay() != 0)
+            profitRest.setMay(0.0);
         else
             profitRest.setMay(may);
+
         Double june = profitRepository.restForJune();
-        if (profitRest.getMay() == 0 && june == 0 && profitRest.getJune() == 0 || profitRest.getMay() == 0 && june == 0 && profitRest.getJune() != 0)
-            ;
+        if (profitRest.getMay() == 0 && june == 0 && profitRest.getJune() == 0
+                || profitRest.getMay() == 0 && june == 0 && profitRest.getJune() != 0)
+            profitRest.setJune(0.0);
         else
             profitRest.setJune(june);
+
         Double july = profitRepository.restForJuly();
-        if (profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() == 0 || profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() != 0)
-            ;
+        if (profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() == 0
+                || profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() != 0)
+            profitRest.setJuly(0.0);
         else
             profitRest.setJuly(july);
+
         Double august = profitRepository.restForAugust();
-        if (profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() == 0 || profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() != 0)
-            ;
+        if (profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() == 0
+                || profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() != 0)
+            profitRest.setAugust(0.0);
         else
             profitRest.setAugust(august);
+
         Double september = profitRepository.restForSeptember();
-        if (profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() == 0 || profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() != 0)
-            ;
+        if (profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() == 0
+                || profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() != 0)
+            profitRest.setSeptember(0.0);
         else
             profitRest.setSeptember(september);
+
         Double october = profitRepository.restForOctober();
-        if (profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() == 0 || profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() != 0)
-            ;
+        if (profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() == 0
+                || profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() != 0)
+            profitRest.setOctober(0.0);
         else
             profitRest.setOctober(october);
+
         Double november = profitRepository.restForNovember();
-        if (profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() == 0 || profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() != 0)
-            ;
+        if (profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() == 0
+                || profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() != 0)
+            profitRest.setNovember(0.0);
         else
             profitRest.setNovember(november);
+
         Double december = profitRepository.restForDecember();
-        if (profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() == 0 || profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() != 0)
-            ;
+        if (profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() == 0
+                || profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() != 0)
+            profitRest.setDecember(0.0);
         else
             profitRest.setDecember(december);
         profitRepository.save(profitRest);
@@ -257,15 +265,20 @@ public class ProfitService {
         }
         if ("Balance at the beginning".equals(profit.getArticle()) && "Opening balance".equals(profit.getArticle())) {
             throw new NotFoundException("Such " + article + " can not be deleted");
-        } else {
-            profitRepository.deleteProfitEntityByArticle(article);
-//            for (int i = 0; i < 12; i++) {
-//                for (int j = 0; j < 1; j++) {
-//                    countSum();
-//                }
-//                balance();
-//            }
-//            countSumLine();
         }
+        else {
+            profitRepository.deleteProfitEntityByArticle(article);
+            counterProfit();
+        }
+    }
+
+    public void counterProfit() {
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 1; j++) {
+                countSum();
+            }
+            balance();
+        }
+        countSumLine();
     }
 }

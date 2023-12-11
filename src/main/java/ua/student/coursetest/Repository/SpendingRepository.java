@@ -3,6 +3,7 @@ package ua.student.coursetest.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import ua.student.coursetest.Entity.SpendingEntity;
 
 public interface SpendingRepository extends JpaRepository<SpendingEntity, Long> {
@@ -10,13 +11,11 @@ public interface SpendingRepository extends JpaRepository<SpendingEntity, Long> 
     boolean existsByArticle (String article);
     SpendingEntity findByArticle (String article);
     void deleteSpendingEntityByArticle (String article);
-
+    @Transactional
     @Modifying
     @Query("UPDATE SpendingEntity e SET e.year = e.january + e.february + e.march + e.april + e.may + " +
             "e.june + e.july + e.august + e.september + e.october + e.november + e.december WHERE e.article = e.article")
-    void sumSpendingLine(Double january, Double february, Double march, Double april, Double may,
-                         Double june, Double july, Double august, Double september, Double october, Double november,
-                         Double december, String article);
+    void sumSpendingLine();
 
     @Query("SELECT sum (e.january) from SpendingEntity e ")
     Double totalJan();

@@ -2,7 +2,7 @@ package ua.student.coursetest.Services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.student.coursetest.Entity.ProfitEntity;
+import ua.student.coursetest.Controllers.HandlerUpdate;
 import ua.student.coursetest.Entity.SpendingEntity;
 import ua.student.coursetest.Entity.SpendingTotalEntity;
 import ua.student.coursetest.Exception.AlreadyExistException;
@@ -15,17 +15,20 @@ import ua.student.coursetest.Repository.SpendingTotalRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class SpendingService {
 
     private final SpendingRepository spendingRepository;
     private final SpendingTotalRepository spendingTotalRepository;
     private final ProfitService profitService;
+    private final HandlerUpdate update;
 
-    public SpendingService(SpendingRepository spendingRepository, SpendingTotalRepository spendingTotalRepository, ProfitService profitService) {
+    public SpendingService(SpendingRepository spendingRepository, SpendingTotalRepository spendingTotalRepository, ProfitService profitService, HandlerUpdate update) {
         this.spendingRepository = spendingRepository;
         this.spendingTotalRepository = spendingTotalRepository;
         this.profitService = profitService;
+        this.update = update;
     }
 
 
@@ -56,9 +59,17 @@ public class SpendingService {
         throw new NotFoundException("Could not find line with article " + article);
     }
 
+    public void startTable(SpendingModel model) {
+        if (spendingRepository.findByArticle(model.getArticle()) == null) {
+            spendingRepository.save(SpendingEntity.fromModel(update.addMonthToTable(model)));
+
+        }
+    }
+
     public void saveSpending(SpendingModel model) throws AlreadyExistException {
         if (spendingRepository.findByArticle(model.getArticle()) == null) {
-            SpendingModel spendingModel = new SpendingModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+            SpendingModel spendingModel = new SpendingModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
             if (model.getJanuary() != null)
                 spendingModel.setJanuary(model.getJanuary());
             if (model.getFebruary() != null)
@@ -87,32 +98,9 @@ public class SpendingService {
                 spendingModel.setYear(model.getYear());
             spendingRepository.save(SpendingEntity.fromModel(spendingModel));
         }
-//        if (profitEntityRepository.findByArticle(model.getArticle()) != null) {
-//            ProfitEntity profitModel = profitEntityRepository.findByArticle(model.getArticle());
-//            profitModel.setJanuary(model.getJanuary());
-//            profitModel.setFebruary(model.getFebruary());
-//            profitModel.setMarch(model.getMarch());
-//            profitModel.setApril(model.getApril());
-//            profitModel.setMay(model.getMay());
-//            profitModel.setJune(model.getJune());
-//            profitModel.setJuly(model.getJuly());
-//            profitModel.setAugust(model.getAugust());
-//            profitModel.setSeptember(model.getSeptember());
-//            profitModel.setOctober(model.getOctober());
-//            profitModel.setNovember(model.getNovember());
-//            profitModel.setDecember(model.getDecember());
-//            profitEntityRepository.save(profitModel);
-
-//            for (int i = 0; i < 12; i++) {
-//                for (int j = 0; j < 1; j++) {
-//                    countSum();
-//                }
-//                balance();
-//            }
-//            countSumLine();
-//            profitEntityRepository.save(profitModel);
-//        }
+        counterSpending();
     }
+
 
     @Transactional
     public boolean addSpendingTotal(SpendingTotalModel spendingTotalModelTotalModel) {
@@ -129,29 +117,15 @@ public class SpendingService {
         if (spendingModel == null) {
             return;
         }
-        spendingModel.setJanuary(model.getJanuary());
-        spendingModel.setFebruary(model.getFebruary());
-        spendingModel.setMarch(model.getMarch());
-        spendingModel.setApril(model.getApril());
-        spendingModel.setMay(model.getMay());
-        spendingModel.setJune(model.getJune());
-        spendingModel.setJuly(model.getJuly());
-        spendingModel.setAugust(model.getAugust());
-        spendingModel.setSeptember(model.getSeptember());
-        spendingModel.setOctober(model.getOctober());
-        spendingModel.setNovember(model.getNovember());
-        spendingModel.setDecember(model.getDecember());
-
-//        for (int i = 0; i < 12; i++) {
-//                for (int j = 0; j < 1; j++) {
-//                    countSum();
-//                }
-//                balance();
-//            }
-//            countSumLine();
-        spendingRepository.save(SpendingEntity.fromModel(spendingModel));
+        spendingRepository.save(SpendingEntity.fromModel(update.addMonthToTable(model, spendingModel)));
+        counterSpending();
     }
 
+    @Transactional
+    public void countSumLineSpending() {
+        spendingRepository.sumSpendingLine();
+        countSumSE();
+    }
 
     @Transactional
     public void countSumSE() {
@@ -189,14 +163,24 @@ public class SpendingService {
     @Transactional
     public void deleteSpending(String article) throws NotFoundException {
         spendingRepository.deleteSpendingEntityByArticle(article);
-//        countSumSE();
-//        for (int i = 0; i < 12; i++) {
-//            for (int j = 0; j < 1; j++) {
-//                profitService.countSum();
-//            }
-//            profitService.balance();
-//        }
+        counterSpending();
+
+    }
+
+    public void counterSpending() {
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 1; j++) {
+                countSumSE();
+                profitService.countSum();
+            }
+            countSumLineSpending();
+            profitService.balance();
+        }
+        profitService.countSum();
+        profitService.countSumLine();
     }
 }
+
+
 
 

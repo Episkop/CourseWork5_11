@@ -3,6 +3,7 @@ package ua.student.coursetest.Entity;
 import jakarta.persistence.*;
 import lombok.Setter;
 import org.hibernate.Hibernate;
+import org.springframework.core.annotation.Order;
 import ua.student.coursetest.Model.ProfitModel;
 
 import java.util.Objects;
@@ -83,6 +84,19 @@ public class ProfitEntity {
                 model.getNovember(), model.getDecember(), model.getYear());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProfitEntity profit)) return false;
+        return article.equals(profit.article) && Objects.equals(january, profit.january)
+                && Objects.equals(february, profit.february) && Objects.equals(march, profit.march)
+                && Objects.equals(april, profit.april) && Objects.equals(may, profit.may)
+                && Objects.equals(june, profit.june) && Objects.equals(july, profit.july)
+                && Objects.equals(august, profit.august) && Objects.equals(september, profit.september)
+                && Objects.equals(october, profit.october) && Objects.equals(november, profit.november)
+                && Objects.equals(december, profit.december) && Objects.equals(year, profit.year)
+                && user.equals(profit.user);
+    }
 
     @Override
     public int hashCode() {

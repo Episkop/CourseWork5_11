@@ -3,6 +3,7 @@ package ua.student.coursetest.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import ua.student.coursetest.Entity.ProfitEntity;
 
 public interface ProfitRepository extends JpaRepository<ProfitEntity, Long> {
@@ -37,7 +38,9 @@ public interface ProfitRepository extends JpaRepository<ProfitEntity, Long> {
     Double restForDecember();
     //    @Query("SELECT e.december - p.december from ProfitTotalEntity e, SpendingTotalEntity p" )
 //    Double restForJanuary();
-    @Modifying
+
+    @Transactional
+    @Modifying (clearAutomatically = true)
     @Query("UPDATE ProfitEntity e SET e.year = e.january + e.february + e.march + e.april + e.may + " +
             "e.june + e.july + e.august + e.september + e.october + e.november + e.december WHERE e.article = e.article and not e.article = 'Balance at the beginning'")
     void sumProfitLine();

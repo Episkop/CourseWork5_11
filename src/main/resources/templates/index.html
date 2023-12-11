@@ -4,27 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Table 1</title>
-<!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
-    <link rel="stylesheet" type="text/css" href="ind.css">
+    <!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
+    <link rel="stylesheet" type="text/css" href="  ind.css">
 </head>
-<body  style="background: linear-gradient(to top, #aee4f5 0%, #52d1d7 100%);
-       height: 100%;">
-
-<div class="container-fluid text-center">
-    <h3> Profit List </h3>
-
-    <a type="button" class="btn-dark" th:href="@{/new}"><h3>New Profit Attribute</h3></a>
-
-</div>
-
+<body>
 <div th:if="${message}" class="alert alert-success">
     [[${message}]]
 </div>
+
+    <form th:action="@{/saveUpdate/{article}}" th:method="Post" th:object="${startUp}">
+
+    <select class = "form-control" >
+    <option value="">Select start month</option>
+    <option th:each="up : ${profitOpen}"
+            th:value="${up}"
+            th:text="${up}">
+    </option>
+    </select>
+    <button type="submit">Not in time</button>
+    </form>
+
+
+<form th:method="GET" th:action="@{/new}">
+    <div class="text-center">
+
+        <button type="submit" class="btn">New Profit Attribute</button>
+    </div>
+</form>
+<!--<div class="container-fluid text-center">-->
+<!--    <a type="button" class="btn-dark" th:href="@{/new}"><h3>New Profit Attribute</h3></a>-->
+<!--</div>-->
+
+
 
 <div class="snippet-container mtb-3">
     <div class="table-responsive">
         <table class="table">
             <thead>
+            <tr>
+                <th> Profit List</th>
+            </tr>
             <tr>
                 <th>Attribute</th>
                 <th>January</th>
@@ -44,6 +63,38 @@
             </tr>
             </thead>
             <tbody>
+            <tr>
+                <td th:if="${profitOpen.article}">[[${profitOpen.article}]]</td>
+                <td th:text="${profitOpen.january}"></td>
+                <td th:text="${profitOpen.february}"></td>
+                <td th:text="${profitOpen.march}"></td>
+                <td th:text="${profitOpen.april}"></td>
+                <td th:text="${profitOpen.may}"></td>
+                <td th:text="${profitOpen.june}"></td>
+                <td th:text="${profitOpen.july}"></td>
+                <td th:text="${profitOpen.august}"></td>
+                <td th:text="${profitOpen.september}"></td>
+                <td th:text="${profitOpen.october}"></td>
+                <td th:text="${profitOpen.november}"></td>
+                <td th:text="${profitOpen.december}"></td>
+                <td th:text="${profitOpen.year}"></td>
+            </tr>
+            <tr>
+                <td th:if="${profitBalance.article}">[[${profitBalance.article}]]</td>
+                <td th:text="${profitBalance.january}"></td>
+                <td th:text="${profitBalance.february}"></td>
+                <td th:text="${profitBalance.march}"></td>
+                <td th:text="${profitBalance.april}"></td>
+                <td th:text="${profitBalance.may}"></td>
+                <td th:text="${profitBalance.june}"></td>
+                <td th:text="${profitBalance.july}"></td>
+                <td th:text="${profitBalance.august}"></td>
+                <td th:text="${profitBalance.september}"></td>
+                <td th:text="${profitBalance.october}"></td>
+                <td th:text="${profitBalance.november}"></td>
+                <td th:text="${profitBalance.december}"></td>
+                <td th:text="${profitBalance.year}"></td>
+            </tr>
             <tr th:each="profits:${listProfits}">
                 <td th:text="${profits.article}">article</td>
                 <td th:text="${profits.january}"></td>
@@ -61,43 +112,49 @@
                 <td th:text="${profits.year}"></td>
                 <td>
                     <a class="h4 mr-3" th:href="@{'/update/' + ${profits.article}}">Edit</a>
-                    <a class="h4"  th:href="@{'/delete/' + ${profits.article}}">Delete</a>
+                    <a class="h4" th:href="@{'/delete/' + ${profits.article}}">Delete</a>
                 </td>
             </tr>
-                    <tr>
-                    <tr th:each="total:${listProfitTotal}">
-                        <td th:text="${total.article}">article</td>
-                        <td th:text="${total.january}"></td>
-                        <td th:text="${total.february}"></td>
-                        <td th:text="${total.march}"></td>
-                        <td th:text="${total.april}"></td>
-                        <td th:text="${total.may}"></td>
-                        <td th:text="${total.june}"></td>
-                        <td th:text="${total.july}"></td>
-                        <td th:text="${total.august}"></td>
-                        <td th:text="${total.september}"></td>
-                        <td th:text="${total.october}"></td>
-                        <td th:text="${total.november}"></td>
-                        <td th:text="${total.december}"></td>
-                        <td th:text="${total.year}"></td>
-                    </tr>
+            <tr>
+            <tr th:each="total:${listProfitTotal}">
+                <td th:text="${total.article}">article</td>
+                <td th:text="${total.january}"></td>
+                <td th:text="${total.february}"></td>
+                <td th:text="${total.march}"></td>
+                <td th:text="${total.april}"></td>
+                <td th:text="${total.may}"></td>
+                <td th:text="${total.june}"></td>
+                <td th:text="${total.july}"></td>
+                <td th:text="${total.august}"></td>
+                <td th:text="${total.september}"></td>
+                <td th:text="${total.october}"></td>
+                <td th:text="${total.november}"></td>
+                <td th:text="${total.december}"></td>
+                <td th:text="${total.year}"></td>
+            </tr>
             </tbody>
         </table>
     </div>
 </div>
-
-
-<div class="container-fluid text-center">
-    <h3> Spending List </h3>
-    <div class="m-2">
-        <a class="border-bottom" th:href="@{/newSpending}"><h3>New Spending Attribute</h3></a>
+<form th:method="GET" th:action="@{/newSpending}">
+    <div class="text-center">
+        <button type="submit" class="btn">New Spending Attribute</button>
     </div>
-</div>
+</form>
+
+<!--<div class="container-fluid text-center">-->
+<!--    <div class="m-2">-->
+<!--        <a class="border-bottom" th:href="@{/newSpending}"><h3>New Spending Attribute</h3></a>-->
+<!--    </div>-->
+<!--</div>-->
 
 <div class="snippet-container mtb-3">
     <div class="table-responsive">
         <table class="table">
             <thead>
+            <tr>
+                <th> Spending List</th>
+            </tr>
             <tr>
                 <th>Attribute</th>
                 <th>January</th>
@@ -134,7 +191,7 @@
                 <td th:text="${Spending.year}"></td>
                 <td>
                     <a class="h4 mr-3" th:href="@{'/updateSpending/' + ${Spending.article}}">Edit</a>
-                    <a class="h4"  th:href="@{'/deleteSpending/' + ${Spending.article}}">Delete</a>
+                    <a class="h4" th:href="@{'/deleteSpending/' + ${Spending.article}}">Delete</a>
                 </td>
             </tr>
             <tr>

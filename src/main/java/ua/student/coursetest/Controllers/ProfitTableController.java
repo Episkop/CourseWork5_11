@@ -3,7 +3,10 @@ package ua.student.coursetest.Controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ua.student.coursetest.Exception.AlreadyExistException;
 import ua.student.coursetest.Exception.DBIsEmptyException;
@@ -25,6 +28,7 @@ public class ProfitTableController {
     private final ProfitService profitService;
 
     private final SpendingService spendingService;
+
     public ProfitTableController(ProfitService profitService, SpendingService spendingService) {
         this.profitService = profitService;
         this.spendingService = spendingService;
@@ -33,6 +37,14 @@ public class ProfitTableController {
     @GetMapping("/profit")
     public String getAllProfit(Model model) {
         try {
+            try {
+                ProfitModel profitBalance = profitService.findProfit("Balance at the beginning");
+                model.addAttribute("profitBalance", profitBalance);
+                ProfitModel profitOpen = profitService.findProfit("Opening balance");
+                model.addAttribute("profitOpen", profitOpen);
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e.getMessage());
+            }
             List<ProfitModel> listProfits = profitService.findAllProfit();
             model.addAttribute("listProfits", listProfits);
             List<ProfitTotalModel> listProfitTotal = profitService.getAllTotalProfit();
@@ -90,8 +102,30 @@ public class ProfitTableController {
         }
     }
 
+    @GetMapping("/startUp/{article}")
+    public String startUpForm(@PathVariable("article") String article, Model model, RedirectAttributes ra) {
+        try {
+            model.addAttribute("startUp", profitService.findStartUpBalance(article));
+            return "index";
+        } catch (NotFoundException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+        }
+        return "redirect:/profit";
+    }
+
+//    @PostMapping("/saveStartUp")
+//    public String saveStartUp(@ModelAttribute("startUp") ProfitModel profitModel, RedirectAttributes ra) {
+//        try {
+//            profitService.startUpBalance(profitModel);
+//            ra.addFlashAttribute("message", "The new Line with article " + profitModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
+//        } catch (NotFoundException e) {
+//            throw new RuntimeException(e.getMessage());
+//        }
+//        return "redirect:/profit";
+//    }
+
     @PostMapping("/saveUpdate/{article}")
-    public String update(@ModelAttribute("profit") ProfitModel profitModel,@PathVariable ("article") String article, RedirectAttributes ra) {
+    public String update(@ModelAttribute("profit") ProfitModel profitModel, @PathVariable("article") String article, RedirectAttributes ra) {
         try {
             profitService.updateProfit(profitModel);
             ra.addFlashAttribute("message", "The new Line with article " + profitModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
@@ -107,7 +141,7 @@ public class ProfitTableController {
             profitService.delete(article);
             ra.addFlashAttribute("message", "The Attribute " + article.toUpperCase(Locale.ROOT) + " has been deleted.");
         } catch (NotFoundException e) {
-            ra.addFlashAttribute("message", e.getMessage());
+            ra.addFlashAttribute("message", "This attribute can`t be deleted");
         }
         return "redirect:/profit";
     }
