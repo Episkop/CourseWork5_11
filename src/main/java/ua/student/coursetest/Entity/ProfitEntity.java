@@ -1,21 +1,19 @@
 package ua.student.coursetest.Entity;
 
-import jakarta.persistence.*;
-import lombok.Setter;
-import org.hibernate.Hibernate;
-import org.springframework.core.annotation.Order;
-import ua.student.coursetest.Model.ProfitModel;
 
+import lombok.Setter;
+import ua.student.coursetest.Model.ProfitModel;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Setter
-@Table (name = "profit")
+@Table(name = "profit")
 public class ProfitEntity {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id", nullable = false)
-//    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
     @Column(name = "article", nullable = false)
     private String article;
     private Double january;
@@ -32,10 +30,17 @@ public class ProfitEntity {
     private Double december;
     private Double year;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private UserEntity userProfit;
 
+    public UserEntity getUserProfit() {
+        return userProfit;
+    }
+
+    public void setUserProfit(UserEntity userProfit) {
+        this.userProfit = userProfit;
+    }
 
     public ProfitEntity(String article, Double january, Double february, Double march, Double april, Double may,
                         Double june, Double july, Double august, Double september, Double october, Double november,
@@ -57,6 +62,26 @@ public class ProfitEntity {
 
     }
 
+    public ProfitEntity(Long id,String article, Double january, Double february, Double march, Double april, Double may,
+                        Double june, Double july, Double august, Double september, Double october, Double november,
+                        Double december, Double year) {
+        this.id = id;
+        this.article = article;
+        this.january = january;
+        this.february = february;
+        this.march = march;
+        this.april = april;
+        this.may = may;
+        this.june = june;
+        this.july = july;
+        this.august = august;
+        this.september = september;
+        this.october = october;
+        this.november = november;
+        this.december = december;
+        this.year = year;
+
+    }
     public ProfitEntity() {
     }
 
@@ -67,6 +92,12 @@ public class ProfitEntity {
                 september, october, november, december,year);
     }
 
+    public static ProfitEntity of(Long id,String article, Double january, Double february, Double march, Double april, Double may,
+                                  Double june, Double july, Double august, Double september, Double october, Double november,
+                                  Double december, Double year){
+        return new ProfitEntity(id,article, january, february, march, april, may, june, july, august,
+                september, october, november, december,year);
+    }
 //    public static ProfitEntity fromModel(StartUpModel startUpModel) {
 //        return ProfitEntity.of(startUpModel.getArticle(),startUpModel.getJanuary(),startUpModel.getFebruary(),startUpModel.getMarch(),startUpModel.getApril(),
 //                startUpModel.getMay(), startUpModel.getJune(),startUpModel.getJuly(), startUpModel.getAugust(), startUpModel.getSeptember(), startUpModel.getOctober(),
@@ -74,12 +105,12 @@ public class ProfitEntity {
 //    }
 
     public ProfitModel toModel() {
-        return ProfitModel.of(article, january, february, march, april, may, june, july, august,
+        return ProfitModel.of(id,article, january, february, march, april, may, june, july, august,
                 september, october, november, december, year);
     }
 
     public static ProfitEntity fromModel (ProfitModel model){
-        return ProfitEntity.of(model.getArticle(),model.getJanuary(),model.getFebruary(),model.getMarch(),model.getApril(),
+        return ProfitEntity.of(model.getId(),model.getArticle(),model.getJanuary(),model.getFebruary(),model.getMarch(),model.getApril(),
                 model.getMay(), model.getJune(),model.getJuly(), model.getAugust(), model.getSeptember(), model.getOctober(),
                 model.getNovember(), model.getDecember(), model.getYear());
     }
@@ -95,7 +126,7 @@ public class ProfitEntity {
                 && Objects.equals(august, profit.august) && Objects.equals(september, profit.september)
                 && Objects.equals(october, profit.october) && Objects.equals(november, profit.november)
                 && Objects.equals(december, profit.december) && Objects.equals(year, profit.year)
-                && user.equals(profit.user);
+                && userProfit.equals(profit.userProfit);
     }
 
     @Override
@@ -103,9 +134,9 @@ public class ProfitEntity {
         return getClass().hashCode();
     }
 
-//    public Long getId() {
-//        return this.id;
-//    }
+    public Long getId() {
+        return this.id;
+    }
 
     public String getArticle() {
         return this.article;

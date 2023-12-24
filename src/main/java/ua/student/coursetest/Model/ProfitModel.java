@@ -1,6 +1,9 @@
 package ua.student.coursetest.Model;
 
+import ua.student.coursetest.Entity.ProfitEntity;
+
 public class ProfitModel {
+    private Long id;
     private String article;
     private Double january;
     private Double february;
@@ -35,7 +38,25 @@ public class ProfitModel {
         this.december = december;
         this.year = year;
     }
-
+    public ProfitModel(Long id,String article, Double january, Double february, Double march, Double april, Double may,
+                       Double june, Double july, Double august, Double september, Double october, Double november,
+                       Double december, Double year) {
+        this.id = id;
+        this.article = article;
+        this.january = january;
+        this.february = february;
+        this.march = march;
+        this.april = april;
+        this.may = may;
+        this.june = june;
+        this.july = july;
+        this.august = august;
+        this.september = september;
+        this.october = october;
+        this.november = november;
+        this.december = december;
+        this.year = year;
+    }
     public ProfitModel() {
     }
 
@@ -45,9 +66,42 @@ public class ProfitModel {
         return new ProfitModel(article, january, february, march, april, may, june, july, august,
                 september, october, november, december, year);
     }
-
-//    public static ProfitModel toModel(ProfitEntity entity) {
-//        ProfitModel model = new ProfitModel();
+    public static ProfitModel of(Long id,String article, Double january, Double february, Double march, Double april, Double may,
+                                 Double june, Double july, Double august, Double september, Double october, Double november,
+                                 Double december, Double year) {
+        return new ProfitModel(id,article, january, february, march, april, may, june, july, august,
+                september, october, november, december, year);
+    }
+    public static ProfitModel toModel(ProfitEntity entity) {
+        ProfitModel model = new ProfitModel(entity.getArticle(), 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        if (entity.getJanuary() != null)//todo
+            model.setJanuary(entity.getJanuary());
+        if (entity.getFebruary() != null)
+           model.setFebruary(entity.getFebruary());
+        if (entity.getMarch() != null)
+            model.setMarch(entity.getMarch());
+        if (entity.getApril() != null)
+            model.setApril(entity.getApril());
+        if (entity.getMay() != null)
+            model.setMay(entity.getMay());
+        if (entity.getJune() != null)
+            model.setJune(entity.getJune());
+        if (entity.getJuly() != null)
+            model.setJuly(entity.getJuly());
+        if (entity.getAugust() != null)
+            model.setAugust(entity.getAugust());
+        if (entity.getSeptember() != null)
+            model.setSeptember(entity.getSeptember());
+        if (entity.getOctober() != null)
+            model.setOctober(entity.getOctober());
+        if (entity.getNovember() != null)
+            model.setNovember(entity.getNovember());
+        if (entity.getDecember() != null)
+            model.setDecember(entity.getDecember());
+        if (entity.getYear() != null)
+            model.setYear(entity.getYear());
+//        model.setId(entity.getId());
 //        model.setArticle(entity.getArticle());
 //        model.setJanuary(entity.getJanuary());
 //        model.setFebruary(entity.getFebruary());
@@ -56,14 +110,23 @@ public class ProfitModel {
 //        model.setMay(entity.getMay());
 //        model.setJune(entity.getJune());
 //        model.setJuly(entity.getJuly());
-//        model.setAugust(model.getAugust());
+//        model.setAugust(entity.getAugust());
 //        model.setSeptember(entity.getSeptember());
 //        model.setOctober(entity.getOctober());
 //        model.setNovember(entity.getNovember());
 //        model.setDecember(entity.getDecember());
 //        model.setYear(entity.getYear());
-//        return model;
-//    }
+        return model;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getArticle() {
         return article;

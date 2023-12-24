@@ -1,16 +1,15 @@
 package ua.student.coursetest.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.*;
 import ua.student.coursetest.Model.SpendingTotalModel;
 
 @Entity
-@Table (name = "TotalSpending")
+@Table(name = "TotalSpending")
 public class SpendingTotalEntity {
     @Id
-    @Column(name = "article", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
     private String article;
     private Double january;
     private Double february;
@@ -26,12 +25,16 @@ public class SpendingTotalEntity {
     private Double december;
     private Double year;
 
-    public String getArticle() {
-        return article;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private UserEntity userSpendingTotal;
+
+    public UserEntity getUserSpendingTotal() {
+        return userSpendingTotal;
     }
 
-    public void setArticle(String article) {
-        this.article = article;
+    public void setUserSpendingTotal(UserEntity userSpendingTotal) {
+        this.userSpendingTotal = userSpendingTotal;
     }
 
     public SpendingTotalEntity(String article, Double january, Double february, Double march, Double april, Double may,
@@ -58,9 +61,9 @@ public class SpendingTotalEntity {
 
     public static SpendingTotalEntity of(String article, Double january, Double february, Double march, Double april, Double may,
                                          Double june, Double july, Double august, Double september, Double october, Double november,
-                                         Double december, Double year){
+                                         Double december, Double year) {
         return new SpendingTotalEntity(article, january, february, march, april, may, june, july, august,
-                september, october, november, december,year);
+                september, october, november, december, year);
     }
 
     public SpendingTotalModel toModel() {
@@ -68,11 +71,24 @@ public class SpendingTotalEntity {
                 september, october, november, december, year);
     }
 
-    public static SpendingTotalEntity fromModel (SpendingTotalModel model){
-        return SpendingTotalEntity.of(model.getArticle(),model.getJanuary(),model.getFebruary(),model.getMarch(),model.getApril(),
-                model.getMay(), model.getJune(),model.getJuly(), model.getAugust(), model.getSeptember(), model.getOctober(),
+    public static SpendingTotalEntity fromModel(SpendingTotalModel model) {
+        return SpendingTotalEntity.of(model.getArticle(), model.getJanuary(), model.getFebruary(), model.getMarch(), model.getApril(),
+                model.getMay(), model.getJune(), model.getJuly(), model.getAugust(), model.getSeptember(), model.getOctober(),
                 model.getNovember(), model.getDecember(), model.getYear());
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getArticle() {
+        return article;
+    }
+
+    public void setArticle(String article) {
+        this.article = article;
+    }
+
     public Double getJanuary() {
         return january;
     }

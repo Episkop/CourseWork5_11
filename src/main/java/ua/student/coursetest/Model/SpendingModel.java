@@ -1,6 +1,7 @@
 package ua.student.coursetest.Model;
 
 public class SpendingModel {
+    private Long id;
     private String article;
     private Double january;
     private Double february;
@@ -16,6 +17,25 @@ public class SpendingModel {
     private Double december;
     private Double year;
 
+    public SpendingModel(Long id,String article, Double january, Double february, Double march, Double april,
+                         Double may, Double june, Double july, Double august, Double september, Double october,
+                         Double november, Double december, Double year) {
+        this.id = id;
+        this.article = article;
+        this.january = january;
+        this.february = february;
+        this.march = march;
+        this.april = april;
+        this.may = may;
+        this.june = june;
+        this.july = july;
+        this.august = august;
+        this.september = september;
+        this.october = october;
+        this.november = november;
+        this.december = december;
+        this.year = year;
+    }
     public SpendingModel(String article, Double january, Double february, Double march, Double april,
                          Double may, Double june, Double july, Double august, Double september, Double october,
                          Double november, Double december, Double year) {
@@ -37,12 +57,25 @@ public class SpendingModel {
 
     public SpendingModel() {
     }
-
+    public static SpendingModel of(Long id,String article, Double january, Double february, Double march, Double april, Double may,
+                                   Double june, Double july, Double august, Double september, Double october, Double november,
+                                   Double december, Double year){
+        return new SpendingModel(id,article, january, february, march, april, may, june, july, august,
+                september, october, november, december,year);
+    }
     public static SpendingModel of(String article, Double january, Double february, Double march, Double april, Double may,
                                    Double june, Double july, Double august, Double september, Double october, Double november,
                                    Double december, Double year){
         return new SpendingModel(article, january, february, march, april, may, june, july, august,
                 september, october, november, december,year);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getArticle() {

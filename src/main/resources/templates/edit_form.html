@@ -9,9 +9,9 @@
 <body>
 <div class="container-fluid text-center">
     <h1>Edit Profit</h1>
-    <form th:action="@{/saveUpdate/{article}(article=${profit.getArticle()})}" th:method="Post" th:object="${profit}">
+    <form th:action="@{/saveUpdate/{article}(article=${profit.getArticle()})}" autocomplete="off" th:method="Post" th:object="${profit}">
 
-<!--        <input type="hidden" th:field="*{id} ">-->
+        <input type="hidden" th:field="*{id} ">
         <div class="snippet-container mtb-3">
             <div class="table-responsive">
                 <table class="table">

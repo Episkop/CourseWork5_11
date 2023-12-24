@@ -1,4 +1,4 @@
-package ua.student.coursetest.Controllers;
+package ua.student.coursetest.Services;
 
 import org.springframework.stereotype.Component;
 import ua.student.coursetest.Model.ProfitModel;
@@ -40,6 +40,7 @@ public class HandlerUpdate {
     }
 
     public ProfitModel addMonthToTable (ProfitModel model,ProfitModel profitModel){
+        profitModel.setId(model.getId());
         profitModel.setJanuary(model.getJanuary());
         profitModel.setFebruary(model.getFebruary());
         profitModel.setMarch(model.getMarch());

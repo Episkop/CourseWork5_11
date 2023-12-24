@@ -1,27 +1,27 @@
 package ua.student.coursetest.Model;
 
 public class UserModel {
-    String username;
+    String name;
     String email;
 
-    public UserModel(String username, String email) {
-        this.username = username;
+    public UserModel(String email,String name) {
+        this.name = name;
         this.email = email;
     }
 
     public UserModel() {
     }
 
-    public static UserModel of(String email, String name) {
-        return new UserModel(email, name);
+    public static UserModel of(String email,String username) {
+        return new UserModel(email,username);
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

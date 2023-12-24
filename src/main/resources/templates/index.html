@@ -8,21 +8,23 @@
     <link rel="stylesheet" type="text/css" href="  ind.css">
 </head>
 <body>
+
+
 <div th:if="${message}" class="alert alert-success">
     [[${message}]]
 </div>
 
-    <form th:action="@{/saveUpdate/{article}}" th:method="Post" th:object="${startUp}">
+<!--    <form th:action="@{/saveUpdate/{article}}" th:method="Post" th:object="${startUp}">-->
 
-    <select class = "form-control" >
-    <option value="">Select start month</option>
-    <option th:each="up : ${profitOpen}"
-            th:value="${up}"
-            th:text="${up}">
-    </option>
-    </select>
-    <button type="submit">Not in time</button>
-    </form>
+<!--    <select class = "form-control" >-->
+<!--    <option value="">Select start month</option>-->
+<!--    <option th:each="up : ${profitOpen}"-->
+<!--            th:value="${up}"-->
+<!--            th:text="${up}">-->
+<!--    </option>-->
+<!--    </select>-->
+<!--    <button type="submit">Not in time</button>-->
+<!--    </form>-->
 
 
 <form th:method="GET" th:action="@{/new}">

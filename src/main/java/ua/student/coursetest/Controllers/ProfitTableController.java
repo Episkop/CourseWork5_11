@@ -1,6 +1,7 @@
 package ua.student.coursetest.Controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ua.student.coursetest.Entity.ProfitEntity;
 import ua.student.coursetest.Exception.AlreadyExistException;
 import ua.student.coursetest.Exception.DBIsEmptyException;
 import ua.student.coursetest.Exception.NotFoundException;
@@ -34,24 +36,29 @@ public class ProfitTableController {
         this.spendingService = spendingService;
     }
 
+    private String getEmail(OAuth2AuthenticationToken auth) {
+        return (String) auth.getPrincipal().getAttributes().get("email");
+    }
+
     @GetMapping("/profit")
-    public String getAllProfit(Model model) {
+    public String getAllProfit(Model model, OAuth2AuthenticationToken auth) {
+        String email = getEmail(auth);
         try {
             try {
-                ProfitModel profitBalance = profitService.findProfit("Balance at the beginning");
+                ProfitModel profitBalance = profitService.findProfit(email, "Balance at the beginning");
                 model.addAttribute("profitBalance", profitBalance);
-                ProfitModel profitOpen = profitService.findProfit("Opening balance");
+                ProfitModel profitOpen = profitService.findProfit(email, "Opening balance");
                 model.addAttribute("profitOpen", profitOpen);
             } catch (NotFoundException e) {
                 throw new RuntimeException(e.getMessage());
             }
-            List<ProfitModel> listProfits = profitService.findAllProfit();
+            List<ProfitModel> listProfits = profitService.findAllProfit(email);
             model.addAttribute("listProfits", listProfits);
-            List<ProfitTotalModel> listProfitTotal = profitService.getAllTotalProfit();
+            List<ProfitTotalModel> listProfitTotal = profitService.getAllTotalProfit(email);
             model.addAttribute("listProfitTotal", listProfitTotal);
-            List<SpendingModel> listSpending = spendingService.findAllSpending();
+            List<SpendingModel> listSpending = spendingService.findAllSpending(email);
             model.addAttribute("listSpending", listSpending);
-            List<SpendingTotalModel> listSpendingTotal = spendingService.getAllTotalSpending();
+            List<SpendingTotalModel> listSpendingTotal = spendingService.getAllTotalSpending(email);
             model.addAttribute("listSpendingTotal", listSpendingTotal);
         } catch (DBIsEmptyException e) {
             throw new RuntimeException(e.getMessage());
@@ -67,9 +74,10 @@ public class ProfitTableController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("profit") ProfitModel model, RedirectAttributes ra) {//добавил @modelAttribute и стало сохранять
+    public String save(@ModelAttribute("profit")ProfitModel model, RedirectAttributes ra, OAuth2AuthenticationToken auth) {//добавил @modelAttribute и стало сохранять
+        String email = getEmail(auth);
         try {
-            profitService.saveProfit(model);
+            profitService.saveProfit(email, model);
             ra.addFlashAttribute("message", "The new Line with article " + model.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
         } catch (AlreadyExistException e) {
             throw new RuntimeException(e.getMessage());
@@ -91,9 +99,11 @@ public class ProfitTableController {
 //    }
 
     @GetMapping("/update/{article}")
-    public String updateForm(@PathVariable("article") String article, Model model, RedirectAttributes ra) {
+    public String updateForm(@PathVariable("article") String article, Model model, RedirectAttributes ra,
+                             OAuth2AuthenticationToken auth) {
+        String email = getEmail(auth);
         try {
-            model.addAttribute("profit", profitService.findProfit(article));
+            model.addAttribute("profit", profitService.findProfit(email, article));
             model.addAttribute("pageTitle", "Add New Profit Line");
             return "edit_form";
         } catch (NotFoundException e) {
@@ -103,9 +113,11 @@ public class ProfitTableController {
     }
 
     @GetMapping("/startUp/{article}")
-    public String startUpForm(@PathVariable("article") String article, Model model, RedirectAttributes ra) {
+    public String startUpForm(@PathVariable("article") String article, Model model, RedirectAttributes ra,
+                              OAuth2AuthenticationToken auth) {
+        String email = getEmail(auth);
         try {
-            model.addAttribute("startUp", profitService.findStartUpBalance(article));
+            model.addAttribute("startUp", profitService.findStartUpBalance(email,article));
             return "index";
         } catch (NotFoundException e) {
             ra.addFlashAttribute("message", e.getMessage());
@@ -125,9 +137,11 @@ public class ProfitTableController {
 //    }
 
     @PostMapping("/saveUpdate/{article}")
-    public String update(@ModelAttribute("profit") ProfitModel profitModel, @PathVariable("article") String article, RedirectAttributes ra) {
+    public String update(@ModelAttribute("profit") ProfitModel profitModel, @PathVariable("article") String article,
+                         RedirectAttributes ra, OAuth2AuthenticationToken auth) {
+        String email = getEmail(auth);
         try {
-            profitService.updateProfit(profitModel);
+            profitService.updateProfit(email, profitModel);
             ra.addFlashAttribute("message", "The new Line with article " + profitModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
         } catch (NotFoundException e) {
             throw new RuntimeException(e.getMessage());
@@ -136,9 +150,10 @@ public class ProfitTableController {
     }
 
     @GetMapping("/delete/{article}")
-    public String deleteUser(@PathVariable("article") String article, RedirectAttributes ra) {
+    public String deleteUser(@PathVariable("article") String article, RedirectAttributes ra,OAuth2AuthenticationToken auth) {
+        String email = getEmail(auth);
         try {
-            profitService.delete(article);
+            profitService.delete(email,article);
             ra.addFlashAttribute("message", "The Attribute " + article.toUpperCase(Locale.ROOT) + " has been deleted.");
         } catch (NotFoundException e) {
             ra.addFlashAttribute("message", "This attribute can`t be deleted");

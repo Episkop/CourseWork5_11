@@ -6,17 +6,24 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import ua.student.coursetest.Entity.ProfitEntity;
 
+import java.util.List;
+
 public interface ProfitRepository extends JpaRepository<ProfitEntity, Long> {
-    ProfitEntity findByArticle(String article);
+
+    ProfitEntity findByUserProfitEmailAndArticle(String email,String article);
     void deleteProfitEntityByArticle (String article);
+    boolean existsProfitEntityByUserProfitEmailAndArticle (String email, String article);
+    ProfitEntity getProfitEntityByUserProfitEmailAndArticle (String email, String article);
+    List<ProfitEntity> findByUserProfitEmail(String email);
 
-    boolean existsByArticle (String article);
 
-    ProfitEntity getProfitEntityByArticle (String article);
+    @Query("SELECT e.january - p.january from ProfitTotalEntity e, SpendingTotalEntity p where e.userProfitTotal.email =" +
+            " e.userProfitTotal.email and p.userSpendingTotal.email = p.userSpendingTotal.email" )
+    Double restForFebruary(String email);
 
-    @Query("SELECT e.january - p.january from ProfitTotalEntity e, SpendingTotalEntity p" )
-    Double restForFebruary();
-    @Query("SELECT e.february - p.february from ProfitTotalEntity e, SpendingTotalEntity p" )
+
+    @Query("SELECT e.february - p.february from ProfitTotalEntity e, SpendingTotalEntity p where e.userProfitTotal.email =" +
+            "e.userProfitTotal.email and p.userSpendingTotal.email = p.userSpendingTotal.email" )
     Double restForMarch();
     @Query("SELECT e.march - p.march from ProfitTotalEntity e, SpendingTotalEntity p" )
     Double restForApril();
@@ -42,11 +49,11 @@ public interface ProfitRepository extends JpaRepository<ProfitEntity, Long> {
     @Transactional
     @Modifying (clearAutomatically = true)
     @Query("UPDATE ProfitEntity e SET e.year = e.january + e.february + e.march + e.april + e.may + " +
-            "e.june + e.july + e.august + e.september + e.october + e.november + e.december WHERE e.article = e.article and not e.article = 'Balance at the beginning'")
+            "e.june + e.july + e.august + e.september + e.october + e.november + e.december " +
+            "WHERE e.article = e.article and not e.article = 'Balance at the beginning'")
     void sumProfitLine();
-
-    @Query("SELECT sum (e.january) from ProfitEntity e ")
-    Double totalJan();
+    @Query("SELECT sum (e.january) from ProfitEntity e where e.userProfit.email = e.userProfit.email")
+    Double totalJan(String email);
     @Query("SELECT sum (e.february) from ProfitEntity e ")
     Double totalFeb();
     @Query("SELECT sum (e.march) from ProfitEntity e ")

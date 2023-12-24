@@ -6,8 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import ua.student.coursetest.Entity.SpendingEntity;
 
-public interface SpendingRepository extends JpaRepository<SpendingEntity, Long> {
+import java.util.List;
 
+public interface SpendingRepository extends JpaRepository<SpendingEntity, Long> {
+    SpendingEntity findByUserSpendingEmailAndArticle (String email,String article);
+
+    SpendingEntity getSpendingEntityByUserSpendingEmailAndArticle (String email,String article);
+    boolean existsProfitEntityByUserSpendingEmailAndArticle (String email,String article);
+    List<SpendingEntity> findByUserSpendingEmail (String email);
     boolean existsByArticle (String article);
     SpendingEntity findByArticle (String article);
     void deleteSpendingEntityByArticle (String article);

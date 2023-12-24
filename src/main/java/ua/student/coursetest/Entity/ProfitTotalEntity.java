@@ -1,16 +1,15 @@
 package ua.student.coursetest.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.*;
 import ua.student.coursetest.Model.ProfitTotalModel;
 
 @Entity
 @Table (name = "TotalProfit")
 public class ProfitTotalEntity {
     @Id
-    @Column(name = "article", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
     private String article;
     private Double january;
     private Double february;
@@ -26,12 +25,16 @@ public class ProfitTotalEntity {
     private Double december;
     private Double year;
 
-    public String getArticle() {
-        return article;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private UserEntity userProfitTotal;
+
+    public UserEntity getUserProfitTotal() {
+        return userProfitTotal;
     }
 
-    public void setArticle(String article) {
-        this.article = article;
+    public void setUserProfitTotal(UserEntity userProfitTotal) {
+        this.userProfitTotal = userProfitTotal;
     }
 
     public ProfitTotalEntity(String article, Double january, Double february, Double march, Double april, Double may,
@@ -73,10 +76,20 @@ public class ProfitTotalEntity {
                 model.getMay(), model.getJune(),model.getJuly(), model.getAugust(), model.getSeptember(), model.getOctober(),
                 model.getNovember(), model.getDecember(), model.getYear());
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getArticle() {
+        return article;
+    }
+    public void setArticle(String article) {
+        this.article = article;
+    }
     public Double getJanuary() {
         return january;
     }
-
     public void setJanuary(Double january) {
         this.january = january;
     }

@@ -1,8 +1,8 @@
 package ua.student.coursetest.Entity;
 
-import jakarta.persistence.*;
 import ua.student.coursetest.Model.UserModel;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,51 +10,73 @@ import java.util.List;
 @Table(name = "User")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    private String username;
+    private String name;
 
-//    private String password;
+    //    private String password;
 //    @Enumerated(value = EnumType.STRING)
 //    private Role role;
     private String email;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userProfit", cascade = CascadeType.ALL)
     private List<ProfitEntity> profits = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
-    private List<SpendingEntity> spending = new ArrayList<>();
+    @OneToMany(mappedBy = "userSpending", cascade = CascadeType.ALL)
+    private List<SpendingEntity> spendings = new ArrayList<>();
+
+    @OneToOne(mappedBy = "userProfitTotal", cascade = CascadeType.ALL)
+    private ProfitTotalEntity totalProf = new ProfitTotalEntity();
+
+    @OneToOne(mappedBy = "userSpendingTotal", cascade = CascadeType.ALL)
+    private SpendingTotalEntity totalSpend = new SpendingTotalEntity();
 
 
-    public UserEntity(String username, String email) {
-        this.username = username;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<ProfitEntity> profits = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL)
+//    private List<SpendingEntity> spending = new ArrayList<>();
+
+
+    public UserEntity(String email, String name) {
+        this.name = name;
         this.email = email;
     }
 
     public UserEntity() {
     }
 
-    public static UserEntity of(String username, String email) {
-        return new UserEntity(username,email);
+    public static UserEntity of(String email, String username) {
+        return new UserEntity(email, username);
     }
 
-    public void addProfitEntity(ProfitEntity profitEntity) {
-        profitEntity.setUser(this);
+    public void addProfit(ProfitEntity profitEntity) {
+        profitEntity.setUserProfit(this);
         profits.add(profitEntity);
     }
 
-    public void addSpendingEntity(SpendingEntity spendingEntity) {
-        spendingEntity.setUser1(this);
-        spending.add(spendingEntity);
+    public void addSpending(SpendingEntity spendingEntity) {
+        spendingEntity.setUserSpending(this);
+        spendings.add(spendingEntity);
+    }
+
+    public void addProfitTotal(ProfitTotalEntity profitTotalEntity) {
+        profitTotalEntity.setUserProfitTotal(this);
+        totalProf = profitTotalEntity;
+    }
+
+    public void addSpendingTotal(SpendingTotalEntity spendingTotalEntity) {
+        spendingTotalEntity.setUserSpendingTotal(this);
+        totalSpend = spendingTotalEntity;
     }
 
     public UserModel toModel() {
-        return UserModel.of(username,email);
+        return UserModel.of(email, name);
     }
 
     public static UserEntity fromModel(UserModel userModel) {
-        return UserEntity.of(userModel.getEmail(), userModel.getUsername());
+        return UserEntity.of(userModel.getEmail(),userModel.getName());
     }
 
     public Long getId() {
@@ -65,12 +87,12 @@ public class UserEntity {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -89,12 +111,27 @@ public class UserEntity {
         this.profits = profits;
     }
 
-    public List<SpendingEntity> getSpending() {
-        return spending;
+    public List<SpendingEntity> getSpendings() {
+        return spendings;
     }
 
-    public void setSpending(List<SpendingEntity> spending) {
-        this.spending = spending;
+    public void setSpendings(List<SpendingEntity> spendings) {
+        this.spendings = spendings;
     }
 
+    public ProfitTotalEntity getTotalProf() {
+        return totalProf;
+    }
+
+    public void setTotalProf(ProfitTotalEntity totalProf) {
+        this.totalProf = totalProf;
+    }
+
+    public SpendingTotalEntity getTotalSpend() {
+        return totalSpend;
+    }
+
+    public void setTotalSpend(SpendingTotalEntity totalSpend) {
+        this.totalSpend = totalSpend;
+    }
 }
