@@ -132,7 +132,7 @@ public class SpendingService {
         if (spendingModel == null) {
             return;
         }
-        SpendingEntity spendingEntity = SpendingEntity.fromModel(update.addMonthToTable(model,spendingModel));
+        SpendingEntity spendingEntity = SpendingEntity.fromModel(ModelUtils.addMonthToTable(model,spendingModel));
         spendingEntity.setUserSpending(user);
         spendingRepository.save(spendingEntity);
 //        spendingRepository.save(SpendingEntity.fromModel(update.addMonthToTable(model, spendingModel)));
@@ -225,6 +225,7 @@ public class SpendingService {
         }
         profitService.countSum(email);
         profitService.countSumLine(email);
+        countSumSE(email);
     }
 }
 

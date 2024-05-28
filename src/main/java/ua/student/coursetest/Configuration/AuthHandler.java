@@ -34,7 +34,8 @@ public class AuthHandler implements AuthenticationSuccessHandler {
 
         UserModel userModel = UserModel.of(
                 (String) attributes.get("email"),
-                (String) attributes.get("name"));
+                (String) attributes.get("name"),
+                (String) attributes.get("pictureUrl"));
 
         List<ProfitModel> profitModels = Arrays.asList(
                 ProfitModel.of("Opening balance", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),

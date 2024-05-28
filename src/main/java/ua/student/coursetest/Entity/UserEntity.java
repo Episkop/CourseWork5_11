@@ -14,11 +14,8 @@ public class UserEntity {
     @Column(name = "id", nullable = false)
     private Long id;
     private String name;
-
-    //    private String password;
-//    @Enumerated(value = EnumType.STRING)
-//    private Role role;
     private String email;
+    private String pictureUrl;
     @OneToMany(mappedBy = "userProfit", cascade = CascadeType.ALL)
     private List<ProfitEntity> profits = new ArrayList<>();
 
@@ -39,7 +36,8 @@ public class UserEntity {
 //    private List<SpendingEntity> spending = new ArrayList<>();
 
 
-    public UserEntity(String email, String name) {
+    public UserEntity(String email, String name, String pictureUrl) {
+        this.pictureUrl = pictureUrl;
         this.name = name;
         this.email = email;
     }
@@ -47,8 +45,8 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public static UserEntity of(String email, String username) {
-        return new UserEntity(email, username);
+    public static UserEntity of(String email, String username,String pictureUrl) {
+        return new UserEntity(email, username, pictureUrl);
     }
 
     public void addProfit(ProfitEntity profitEntity) {
@@ -72,11 +70,11 @@ public class UserEntity {
     }
 
     public UserModel toModel() {
-        return UserModel.of(email, name);
+        return UserModel.of(email, name,pictureUrl);
     }
 
     public static UserEntity fromModel(UserModel userModel) {
-        return UserEntity.of(userModel.getEmail(),userModel.getName());
+        return UserEntity.of(userModel.getEmail(),userModel.getName(),userModel.getPictureUrl());
     }
 
     public Long getId() {
@@ -101,6 +99,14 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
     public List<ProfitEntity> getProfits() {

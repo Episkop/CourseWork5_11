@@ -1,7 +1,6 @@
 package ua.student.coursetest.Services;
 
 import lombok.SneakyThrows;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.student.coursetest.Entity.ProfitEntity;
@@ -17,12 +16,13 @@ import ua.student.coursetest.Repository.ProfitRepository;
 import ua.student.coursetest.Repository.ProfitTotalRepository;
 import ua.student.coursetest.Repository.SpendingTotalRepository;
 import ua.student.coursetest.Repository.UserRepository;
+import ua.student.coursetest.Services.Interface.ProfitServiceInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProfitService {
+public class ProfitService implements ProfitServiceInterface {
 
     private final ProfitRepository profitRepository;
     private final ProfitTotalRepository profitTotalRepository;
@@ -41,6 +41,7 @@ public class ProfitService {
         this.spendingTotalRepository = spendingTotalRepository;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<ProfitModel> findAllProfit(String email) throws DBIsEmptyException {
         List<ProfitModel> modelList = new ArrayList<>();
@@ -53,6 +54,7 @@ public class ProfitService {
         return modelList;
     }
 
+    @Override
     public List<ProfitTotalModel> getAllTotalProfit(String email) throws DBIsEmptyException {
         List<ProfitTotalModel> modelList = new ArrayList<>();
         List<ProfitTotalEntity> list = profitTotalRepository.findByUserProfitTotalEmail(email);
@@ -62,6 +64,7 @@ public class ProfitService {
         return modelList;
     }
 
+    @Override
     public ProfitModel findProfit(String email, String article) throws NotFoundException {
         ProfitEntity profit = profitRepository.findByUserProfitEmailAndArticle(email, article);
         if (profit == null) {
@@ -71,16 +74,16 @@ public class ProfitService {
         return profit.toModel();
     }
 
-//    public void startTable(ProfitModel model) {
+    //    public void startTable(ProfitModel model) {
 //        if (profitRepository.findByArticle(model.getArticle()) == null) {
 //            profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model)));
 //        }
 //    }
-
+    @Override
     public void saveProfit(String email, ProfitModel model) throws AlreadyExistException {
         UserEntity user = userRepository.findByEmail(email);
 //        model.setUserProfit(user);
-        if(profitRepository.existsProfitEntityByUserProfitEmailAndArticle(email, model.getArticle()))
+        if (profitRepository.existsProfitEntityByUserProfitEmailAndArticle(email, model.getArticle()))
             return;
 //        ProfitModel.toModel(profitRepository.save(model));
 //        if (profitRepository.existsByArticle(model.getArticle()))
@@ -122,8 +125,7 @@ public class ProfitService {
     }
 
 
-
-//    @Transactional
+    //    @Transactional
 //    public boolean addProfitTotal(ProfitTotalModel profitTotalModel) {
 //        if (profitTotalRepository.existsByArticle(profitTotalModel.getArticle()))
 //            return false;
@@ -131,7 +133,7 @@ public class ProfitService {
 //        profitTotalRepository.save(profitTotalEntity);
 //        return true;
 //    }
-
+    @Override
     @Transactional
     public void updateProfit(String email, ProfitModel model) throws NotFoundException {
         UserEntity user = userRepository.findByEmail(email);
@@ -141,7 +143,7 @@ public class ProfitService {
         if (profitModel == null) {
             return;
         }
-        ProfitEntity profitEntity = ProfitEntity.fromModel(update.addMonthToTable(model,profitModel));
+        ProfitEntity profitEntity = ProfitEntity.fromModel(ModelUtils.addMonthToTable(model, profitModel));
         profitEntity.setUserProfit(user);
         profitRepository.save(profitEntity);
 //        user.addProfit(ProfitEntity.fromModel(update.addMonthToTable(model,profitModel)));
@@ -150,6 +152,7 @@ public class ProfitService {
         counterProfit(email);
     }
 
+    @Override
     public ProfitModel findStartUpBalance(String email, String article) throws NotFoundException {
         ProfitEntity profit = profitRepository.findByUserProfitEmailAndArticle(email, "Opening balance");
         if (profit != null) {
@@ -157,7 +160,8 @@ public class ProfitService {
         }
         throw new NotFoundException("Could not find line with article " + article);
     }
-//    public void startUpBalance(ProfitModel model) throws NotFoundException{
+
+    //    public void startUpBalance(ProfitModel model) throws NotFoundException{
 //        ProfitModel profitModel = profitRepository.findByArticle(model.getArticle()).toModel();
 //        if (!profitModel.getArticle().equals("Opening balance")) {
 //            return;
@@ -165,42 +169,43 @@ public class ProfitService {
 //        profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model, profitModel)));
 //        counterProfit();
 //    }
-
+    @Override
     @Transactional
     public void countSumLine(String email) {
         profitRepository.sumProfitLine();
         countSum(email);
     }
 
+    @Override
     @Transactional
-    public void countSum(String email) {
+    public void countSum(String email) { // Вертикальный расчет
         ProfitTotalEntity pte = profitTotalRepository.findByUserProfitTotalEmailAndArticle(email, "Total incomes");
         List<ProfitEntity> profitEntityList = profitRepository.findByUserProfitEmail(email);
-        Double sumOfJanuary = profitEntityList.stream().map(ProfitEntity::getJanuary).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfJanuary = profitEntityList.stream().map(ProfitEntity::getJanuary).toList().stream().mapToDouble(x -> x).sum();
         pte.setJanuary(sumOfJanuary);
-        Double sumOfFebruary = profitEntityList.stream().map(ProfitEntity::getFebruary).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfFebruary = profitEntityList.stream().map(ProfitEntity::getFebruary).toList().stream().mapToDouble(x -> x).sum();
         pte.setFebruary(sumOfFebruary);
-        Double sumOfMarch = profitEntityList.stream().map(ProfitEntity::getMarch).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfMarch = profitEntityList.stream().map(ProfitEntity::getMarch).toList().stream().mapToDouble(x -> x).sum();
         pte.setMarch(sumOfMarch);
-        Double sumOfApril = profitEntityList.stream().map(ProfitEntity::getApril).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfApril = profitEntityList.stream().map(ProfitEntity::getApril).toList().stream().mapToDouble(x -> x).sum();
         pte.setApril(sumOfApril);
-        Double sumOfMay = profitEntityList.stream().map(ProfitEntity::getMay).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfMay = profitEntityList.stream().map(ProfitEntity::getMay).toList().stream().mapToDouble(x -> x).sum();
         pte.setMay(sumOfMay);
-        Double sumOfJune = profitEntityList.stream().map(ProfitEntity::getJune).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfJune = profitEntityList.stream().map(ProfitEntity::getJune).toList().stream().mapToDouble(x -> x).sum();
         pte.setJune(sumOfJune);
-        Double sumOfJuly = profitEntityList.stream().map(ProfitEntity::getJuly).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfJuly = profitEntityList.stream().map(ProfitEntity::getJuly).toList().stream().mapToDouble(x -> x).sum();
         pte.setJuly(sumOfJuly);
-        Double sumOfAugust = profitEntityList.stream().map(ProfitEntity::getAugust).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfAugust = profitEntityList.stream().map(ProfitEntity::getAugust).toList().stream().mapToDouble(x -> x).sum();
         pte.setAugust(sumOfAugust);
-        Double sumOfSeptember = profitEntityList.stream().map(ProfitEntity::getSeptember).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfSeptember = profitEntityList.stream().map(ProfitEntity::getSeptember).toList().stream().mapToDouble(x -> x).sum();
         pte.setSeptember(sumOfSeptember);
-        Double sumOfOctober = profitEntityList.stream().map(ProfitEntity::getOctober).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfOctober = profitEntityList.stream().map(ProfitEntity::getOctober).toList().stream().mapToDouble(x -> x).sum();
         pte.setOctober(sumOfOctober);
-        Double sumOfNovember = profitEntityList.stream().map(ProfitEntity::getNovember).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfNovember = profitEntityList.stream().map(ProfitEntity::getNovember).toList().stream().mapToDouble(x -> x).sum();
         pte.setNovember(sumOfNovember);
-        Double sumOfDecember = profitEntityList.stream().map(ProfitEntity::getDecember).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfDecember = profitEntityList.stream().map(ProfitEntity::getDecember).toList().stream().mapToDouble(x -> x).sum();
         pte.setDecember(sumOfDecember);
-        Double sumOfYear = profitEntityList.stream().map(ProfitEntity::getYear).toList().stream().mapToDouble(x->x).sum();
+        Double sumOfYear = profitEntityList.stream().map(ProfitEntity::getYear).toList().stream().mapToDouble(x -> x).sum();
         pte.setYear(sumOfYear);
         profitTotalRepository.save(pte);
 
@@ -233,6 +238,7 @@ public class ProfitService {
 //        profitTotalRepository.save(pte);
     }
 
+    @Override
     @SneakyThrows
     @Transactional
     public void balance(String email) {
@@ -320,6 +326,7 @@ public class ProfitService {
         profitRepository.save(profitRest);
     }
 
+    @Override
     @Transactional
     public void delete(String email, String article) throws NotFoundException {
         ProfitEntity profit = profitRepository.findByUserProfitEmailAndArticle(email, article);
@@ -334,6 +341,7 @@ public class ProfitService {
         }
     }
 
+    @Override
     public void counterProfit(String email) {
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 1; j++) {

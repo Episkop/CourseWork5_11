@@ -52,6 +52,8 @@ public interface ProfitRepository extends JpaRepository<ProfitEntity, Long> {
             "e.june + e.july + e.august + e.september + e.october + e.november + e.december " +
             "WHERE e.article = e.article and not e.article = 'Balance at the beginning'")
     void sumProfitLine();
+    // Горизонтальный расчет
+
     @Query("SELECT sum (e.january) from ProfitEntity e where e.userProfit.email = e.userProfit.email")
     Double totalJan(String email);
     @Query("SELECT sum (e.february) from ProfitEntity e ")

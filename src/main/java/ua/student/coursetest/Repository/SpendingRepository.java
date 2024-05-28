@@ -22,6 +22,7 @@ public interface SpendingRepository extends JpaRepository<SpendingEntity, Long> 
     @Query("UPDATE SpendingEntity e SET e.year = e.january + e.february + e.march + e.april + e.may + " +
             "e.june + e.july + e.august + e.september + e.october + e.november + e.december WHERE e.article = e.article")
     void sumSpendingLine();
+    // Горизонтальный расчет
 
     @Query("SELECT sum (e.january) from SpendingEntity e ")
     Double totalJan();
