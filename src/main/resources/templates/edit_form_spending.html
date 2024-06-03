@@ -6,6 +6,8 @@
   <!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
 </head>
 <body>
+<nav th:replace="layouts :: navbar"></nav>
+
 <div class="container-fluid text-center">
   <h1>Edit Spending</h1>
   <form th:action="@{/saveUpdateSpending/{article}(article=${spending.getArticle()})}" th:method="Post" th:object="${spending}">

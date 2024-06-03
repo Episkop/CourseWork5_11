@@ -3,71 +3,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Table 1</title>
-    <!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
-    <link rel="stylesheet" type="text/css" href="css/ind.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/ind.css">
 </head>
 <body>
+
+<nav th:replace="layouts :: navbar"></nav>
 
 <div th:if="${message}" class="alert alert-success">
     [[${message}]]
 </div>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav mr-auto">
-            <!--            <li class="nav-item active">-->
-            <!--                <img class="thumbnail" id="avatar" src="">-->
-            <!--            </li>-->
-<!--            <div class="text-left">-->
-<!--                <button type="submit" class="btn" href="#" data-toggle="modal" data-target="#addModal">Add</button>-->
-
-<!--                <button class="btn" href="/logout">Logout</button>-->
-
-                <!--                <button type="submit" class="btn"  href="/logout" style="text-align: left">Logout</button>-->
-<!--            </div>-->
-
-            <!--            <li class="nav-item">-->
-            <!--                <a class="nav-link" href="#" data-toggle="modal" data-target="#addModal">Add</a>-->
-            <!--            </li>-->
-
-
-        </ul>
-        <!--        <span class="navbar-text">-->
-        <!--                <div id="login">...</div>-->
-        <!--            </span>-->
-    </div>
-</nav>
-<!--    <form th:action="@{/saveUpdate/{article}}" th:method="Post" th:object="${startUp}">-->
-
-<!--    <select class = "form-control" >-->
-<!--    <option value="">Select start month</option>-->
-<!--    <option th:each="up : ${profitOpen}"-->
-<!--            th:value="${up}"-->
-<!--            th:text="${up}">-->
-<!--    </option>-->
-<!--    </select>-->
-<!--    <button type="submit">Not in time</button>-->
-<!--    </form>-->
-
-<form th:method="GET" th:action="@{/logout}">
-    <div class="text-left">
-        <button class="btn" href="/logout">Logout</button>
-    </div>
-</form>
-
-<form th:method="GET" th:action="@{/new}">
-    <div class="text-left">
-        <button type="submit" class="btn">New Profit Attribute</button>
-    </div>
-</form>
-<!--<div class="container-fluid text-center">-->
-<!--    <a type="button" class="btn-dark" th:href="@{/new}"><h3>New Profit Attribute</h3></a>-->
-<!--</div>-->
-
-
 <div class="snippet-container mtb-3">
     <div class="table-responsive">
-        <table class="table">
+        <table class="table" style="margin-top: 50px;">
             <thead>
             <tr>
                 <th> Profit List</th>
@@ -164,17 +113,6 @@
         </table>
     </div>
 </div>
-<form th:method="GET" th:action="@{/newSpending}">
-    <div class="text-left">
-        <button type="submit" class="btn">New Spending Attribute</button>
-    </div>
-</form>
-
-<!--<div class="container-fluid text-center">-->
-<!--    <div class="m-2">-->
-<!--        <a class="border-bottom" th:href="@{/newSpending}"><h3>New Spending Attribute</h3></a>-->
-<!--    </div>-->
-<!--</div>-->
 
 <div class="snippet-container mtb-3">
     <div class="table-responsive">

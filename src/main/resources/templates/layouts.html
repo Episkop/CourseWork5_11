@@ -1,0 +1,24 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/ind.css">
+</head>
+
+<body>
+<header>
+    <nav th:fragment="navbar" class="navbar">
+        <ul>
+            <li><a href="/profit">Home</a></li>
+            <li><a th:method="GET" th:action="@{/new}" href="/new">New Profit Attribute</a></li>
+            <li><a th:method="GET" th:action="@{/newSpending}" href="/newSpending">New Spending Attribute</a></li>
+            <li><a>Input Opening balance</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+
+</header>
+
+</body>
+</html>

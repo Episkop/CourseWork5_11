@@ -6,6 +6,8 @@
 <!--    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>-->
 </head>
 <body>
+<nav th:replace="layouts :: navbar"></nav>
+
 <div class="container-fluid text-center">
     <h1>[[${pageTitle}]]</h1>
     <form th:action="@{/save}" method="post" th:object="${profit}">
