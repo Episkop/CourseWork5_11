@@ -117,24 +117,27 @@ public class ProfitTableController {
                               OAuth2AuthenticationToken auth) {
         String email = getEmail(auth);
         try {
-            model.addAttribute("startUp", profitService.findStartUpBalance(email,article));
-            return "index";
+            model.addAttribute("profit", profitService.findStartUpBalance(email,article));
+            model.addAttribute("pageTitle", "Input Opening Balance at the beginning");
+            return "startCapital";
         } catch (NotFoundException e) {
             ra.addFlashAttribute("message", e.getMessage());
         }
         return "redirect:/profit";
     }
 
-//    @PostMapping("/saveStartUp")
-//    public String saveStartUp(@ModelAttribute("startUp") ProfitModel profitModel, RedirectAttributes ra) {
-//        try {
-//            profitService.startUpBalance(profitModel);
-//            ra.addFlashAttribute("message", "The new Line with article " + profitModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
-//        } catch (NotFoundException e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
-//        return "redirect:/profit";
-//    }
+    @PostMapping("/saveStartUp/{article}")
+    public String updateStartCapital(@ModelAttribute("profit") ProfitModel profitModel, @PathVariable("article") String article,
+                         RedirectAttributes ra, OAuth2AuthenticationToken auth) {
+        String email = getEmail(auth);
+        try {
+            profitService.updateProfit(email, profitModel);
+            ra.addFlashAttribute("message", "The new Line with article " + profitModel.getArticle().toUpperCase(Locale.ROOT) + " has been saved successfully.");
+        } catch (NotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return "redirect:/profit";
+    }
 
     @PostMapping("/saveUpdate/{article}")
     public String update(@ModelAttribute("profit") ProfitModel profitModel, @PathVariable("article") String article,

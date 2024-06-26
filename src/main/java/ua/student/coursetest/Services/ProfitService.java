@@ -137,8 +137,6 @@ public class ProfitService implements ProfitServiceInterface {
     @Transactional
     public void updateProfit(String email, ProfitModel model) throws NotFoundException {
         UserEntity user = userRepository.findByEmail(email);
-//        if (profitRepository.existsByUserProfitEmailAndArticle(email,model.getArticle()))
-//            return;
         ProfitModel profitModel = profitRepository.getProfitEntityByUserProfitEmailAndArticle(email, model.getArticle()).toModel();
         if (profitModel == null) {
             return;
@@ -146,9 +144,6 @@ public class ProfitService implements ProfitServiceInterface {
         ProfitEntity profitEntity = ProfitEntity.fromModel(ModelUtils.addMonthToTable(model, profitModel));
         profitEntity.setUserProfit(user);
         profitRepository.save(profitEntity);
-//        user.addProfit(ProfitEntity.fromModel(update.addMonthToTable(model,profitModel)));
-//        userRepository.save(user);
-//        profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model, profitModel)));
         counterProfit(email);
     }
 

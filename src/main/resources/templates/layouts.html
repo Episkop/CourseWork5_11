@@ -13,7 +13,7 @@
             <li><a href="/profit">Home</a></li>
             <li><a th:method="GET" th:action="@{/new}" href="/new">New Profit Attribute</a></li>
             <li><a th:method="GET" th:action="@{/newSpending}" href="/newSpending">New Spending Attribute</a></li>
-            <li><a>Input Opening balance</a></li>
+            <li><a th:method="GET" th:action="@{/startUp}" href="/startUp/{article}">Input Opening balance</a></li>
             <li><a href="/logout">Logout</a></li>
         </ul>
     </nav>
