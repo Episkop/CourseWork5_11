@@ -3,10 +3,7 @@ package ua.student.coursetest.Services;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.student.coursetest.Entity.ProfitEntity;
-import ua.student.coursetest.Entity.ProfitTotalEntity;
-import ua.student.coursetest.Entity.SpendingTotalEntity;
-import ua.student.coursetest.Entity.UserEntity;
+import ua.student.coursetest.Entity.*;
 import ua.student.coursetest.Exception.AlreadyExistException;
 import ua.student.coursetest.Exception.DBIsEmptyException;
 import ua.student.coursetest.Exception.NotFoundException;
@@ -17,9 +14,11 @@ import ua.student.coursetest.Repository.ProfitTotalRepository;
 import ua.student.coursetest.Repository.SpendingTotalRepository;
 import ua.student.coursetest.Repository.UserRepository;
 import ua.student.coursetest.Services.Interface.ProfitServiceInterface;
-
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ua.student.coursetest.Services.ModelUtils.massive;
 
 @Service
 public class ProfitService implements ProfitServiceInterface {
@@ -27,17 +26,14 @@ public class ProfitService implements ProfitServiceInterface {
     private final ProfitRepository profitRepository;
     private final ProfitTotalRepository profitTotalRepository;
     private final UserRepository userRepository;
-    private final HandlerUpdate update;
     private final SpendingTotalRepository spendingTotalRepository;
 
     public ProfitService(ProfitRepository profitRepository,
                          ProfitTotalRepository profitTotalRepository,
-                         UserRepository userRepository, HandlerUpdate update,
-                         SpendingTotalRepository spendingTotalRepository) {
+                         UserRepository userRepository, SpendingTotalRepository spendingTotalRepository) {
         this.profitRepository = profitRepository;
         this.profitTotalRepository = profitTotalRepository;
         this.userRepository = userRepository;
-        this.update = update;
         this.spendingTotalRepository = spendingTotalRepository;
     }
 
@@ -74,65 +70,75 @@ public class ProfitService implements ProfitServiceInterface {
         return profit.toModel();
     }
 
-    //    public void startTable(ProfitModel model) {
-//        if (profitRepository.findByArticle(model.getArticle()) == null) {
-//            profitRepository.save(ProfitEntity.fromModel(update.addMonthToTable(model)));
-//        }
-//    }
     @Override
     public void saveProfit(String email, ProfitModel model) throws AlreadyExistException {
         UserEntity user = userRepository.findByEmail(email);
-//        model.setUserProfit(user);
-        if (profitRepository.existsProfitEntityByUserProfitEmailAndArticle(email, model.getArticle()))
+        if (profitRepository.existsProfitEntityByUserProfitEmailAndArticle(email, model.getArticle())) {
             return;
-//        ProfitModel.toModel(profitRepository.save(model));
-//        if (profitRepository.existsByArticle(model.getArticle()))
-//            return;
+        }
         ProfitModel profitModel = new ProfitModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0,
                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        if (model.getJanuary() != null)//todo
-            profitModel.setJanuary(model.getJanuary());
-        if (model.getFebruary() != null)
-            profitModel.setFebruary(model.getFebruary());
-        if (model.getMarch() != null)
-            profitModel.setMarch(model.getMarch());
-        if (model.getApril() != null)
-            profitModel.setApril(model.getApril());
-        if (model.getMay() != null)
-            profitModel.setMay(model.getMay());
-        if (model.getJune() != null)
-            profitModel.setJune(model.getJune());
-        if (model.getJuly() != null)
-            profitModel.setJuly(model.getJuly());
-        if (model.getAugust() != null)
-            profitModel.setAugust(model.getAugust());
-        if (model.getSeptember() != null)
-            profitModel.setSeptember(model.getSeptember());
-        if (model.getOctober() != null)
-            profitModel.setOctober(model.getOctober());
-        if (model.getNovember() != null)
-            profitModel.setNovember(model.getNovember());
-        if (model.getDecember() != null)
-            profitModel.setDecember(model.getDecember());
-        if (model.getYear() != null)
-            profitModel.setYear(model.getYear());
+
+        String[] months = massive();
+        for (String month : months) {
+            try {
+                Method getter = ProfitModel.class.getMethod("get" + month);
+                Method setter = ProfitModel.class.getMethod("set" + month, Double.class);
+                Double value = (Double) getter.invoke(model);
+                if (value != null) {
+                    setter.invoke(profitModel, value);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error processing month: " + month, e);
+            }
+        }
+
         ProfitEntity profitEntity = ProfitEntity.fromModel(profitModel);
         profitEntity.setUserProfit(user);
-//        user.addProfit(ProfitEntity.fromModel(profitModel));
-//        userRepository.save(user);
         profitRepository.save(profitEntity);
         counterProfit(email);
     }
 
 
-    //    @Transactional
-//    public boolean addProfitTotal(ProfitTotalModel profitTotalModel) {
-//        if (profitTotalRepository.existsByArticle(profitTotalModel.getArticle()))
-//            return false;
-//        ProfitTotalEntity profitTotalEntity = ProfitTotalEntity.fromModel(profitTotalModel);
-//        profitTotalRepository.save(profitTotalEntity);
-//        return true;
+//    public void saveProfit(String email, ProfitModel model) throws AlreadyExistException {
+//        UserEntity user = userRepository.findByEmail(email);
+//        if (profitRepository.existsProfitEntityByUserProfitEmailAndArticle(email, model.getArticle()))
+//            return;
+//
+//        ProfitModel profitModel = new ProfitModel(model.getArticle(), 0.0, 0.0, 0.0, 0.0,
+//                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+//        if (model.getJanuary() != null)//todo
+//            profitModel.setJanuary(model.getJanuary());
+//        if (model.getFebruary() != null)
+//            profitModel.setFebruary(model.getFebruary());
+//        if (model.getMarch() != null)
+//            profitModel.setMarch(model.getMarch());
+//        if (model.getApril() != null)
+//            profitModel.setApril(model.getApril());
+//        if (model.getMay() != null)
+//            profitModel.setMay(model.getMay());
+//        if (model.getJune() != null)
+//            profitModel.setJune(model.getJune());
+//        if (model.getJuly() != null)
+//            profitModel.setJuly(model.getJuly());
+//        if (model.getAugust() != null)
+//            profitModel.setAugust(model.getAugust());
+//        if (model.getSeptember() != null)
+//            profitModel.setSeptember(model.getSeptember());
+//        if (model.getOctober() != null)
+//            profitModel.setOctober(model.getOctober());
+//        if (model.getNovember() != null)
+//            profitModel.setNovember(model.getNovember());
+//        if (model.getDecember() != null)
+//            profitModel.setDecember(model.getDecember());
+//        if (model.getYear() != null)
+//            profitModel.setYear(model.getYear());
+//        ProfitEntity profitEntity = ProfitEntity.fromModel(profitModel);
+//        profitEntity.setUserProfit(user);
+//        profitRepository.save(profitEntity);
+//        counterProfit(email);
 //    }
+
     @Override
     @Transactional
     public void updateProfit(String email, ProfitModel model) throws NotFoundException {
@@ -173,36 +179,70 @@ public class ProfitService implements ProfitServiceInterface {
 
     @Override
     @Transactional
-    public void countSum(String email) { // Вертикальный расчет
-        ProfitTotalEntity pte = profitTotalRepository.findByUserProfitTotalEmailAndArticle(email, "Total incomes");
-        List<ProfitEntity> profitEntityList = profitRepository.findByUserProfitEmail(email);
-        Double sumOfJanuary = profitEntityList.stream().map(ProfitEntity::getJanuary).toList().stream().mapToDouble(x -> x).sum();
-        pte.setJanuary(sumOfJanuary);
-        Double sumOfFebruary = profitEntityList.stream().map(ProfitEntity::getFebruary).toList().stream().mapToDouble(x -> x).sum();
-        pte.setFebruary(sumOfFebruary);
-        Double sumOfMarch = profitEntityList.stream().map(ProfitEntity::getMarch).toList().stream().mapToDouble(x -> x).sum();
-        pte.setMarch(sumOfMarch);
-        Double sumOfApril = profitEntityList.stream().map(ProfitEntity::getApril).toList().stream().mapToDouble(x -> x).sum();
-        pte.setApril(sumOfApril);
-        Double sumOfMay = profitEntityList.stream().map(ProfitEntity::getMay).toList().stream().mapToDouble(x -> x).sum();
-        pte.setMay(sumOfMay);
-        Double sumOfJune = profitEntityList.stream().map(ProfitEntity::getJune).toList().stream().mapToDouble(x -> x).sum();
-        pte.setJune(sumOfJune);
-        Double sumOfJuly = profitEntityList.stream().map(ProfitEntity::getJuly).toList().stream().mapToDouble(x -> x).sum();
-        pte.setJuly(sumOfJuly);
-        Double sumOfAugust = profitEntityList.stream().map(ProfitEntity::getAugust).toList().stream().mapToDouble(x -> x).sum();
-        pte.setAugust(sumOfAugust);
-        Double sumOfSeptember = profitEntityList.stream().map(ProfitEntity::getSeptember).toList().stream().mapToDouble(x -> x).sum();
-        pte.setSeptember(sumOfSeptember);
-        Double sumOfOctober = profitEntityList.stream().map(ProfitEntity::getOctober).toList().stream().mapToDouble(x -> x).sum();
-        pte.setOctober(sumOfOctober);
-        Double sumOfNovember = profitEntityList.stream().map(ProfitEntity::getNovember).toList().stream().mapToDouble(x -> x).sum();
-        pte.setNovember(sumOfNovember);
-        Double sumOfDecember = profitEntityList.stream().map(ProfitEntity::getDecember).toList().stream().mapToDouble(x -> x).sum();
-        pte.setDecember(sumOfDecember);
-        Double sumOfYear = profitEntityList.stream().map(ProfitEntity::getYear).toList().stream().mapToDouble(x -> x).sum();
-        pte.setYear(sumOfYear);
-        profitTotalRepository.save(pte);
+//    public void countSum(String email) { // Вертикальный расчет
+//        ProfitTotalEntity pte = profitTotalRepository.findByUserProfitTotalEmailAndArticle(email, "Total incomes");
+//        List<ProfitEntity> profitEntityList = profitRepository.findByUserProfitEmail(email);
+//        Double sumOfJanuary = profitEntityList.stream().map(ProfitEntity::getJanuary).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setJanuary(sumOfJanuary);
+//        Double sumOfFebruary = profitEntityList.stream().map(ProfitEntity::getFebruary).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setFebruary(sumOfFebruary);
+//        Double sumOfMarch = profitEntityList.stream().map(ProfitEntity::getMarch).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setMarch(sumOfMarch);
+//        Double sumOfApril = profitEntityList.stream().map(ProfitEntity::getApril).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setApril(sumOfApril);
+//        Double sumOfMay = profitEntityList.stream().map(ProfitEntity::getMay).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setMay(sumOfMay);
+//        Double sumOfJune = profitEntityList.stream().map(ProfitEntity::getJune).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setJune(sumOfJune);
+//        Double sumOfJuly = profitEntityList.stream().map(ProfitEntity::getJuly).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setJuly(sumOfJuly);
+//        Double sumOfAugust = profitEntityList.stream().map(ProfitEntity::getAugust).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setAugust(sumOfAugust);
+//        Double sumOfSeptember = profitEntityList.stream().map(ProfitEntity::getSeptember).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setSeptember(sumOfSeptember);
+//        Double sumOfOctober = profitEntityList.stream().map(ProfitEntity::getOctober).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setOctober(sumOfOctober);
+//        Double sumOfNovember = profitEntityList.stream().map(ProfitEntity::getNovember).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setNovember(sumOfNovember);
+//        Double sumOfDecember = profitEntityList.stream().map(ProfitEntity::getDecember).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setDecember(sumOfDecember);
+//        Double sumOfYear = profitEntityList.stream().map(ProfitEntity::getYear).toList().stream().mapToDouble(x -> x).sum();
+//        pte.setYear(sumOfYear);
+//        profitTotalRepository.save(pte);
+
+        public void countSum(String email) { // Вертикальный расчет
+            ProfitTotalEntity pte = profitTotalRepository.findByUserProfitTotalEmailAndArticle(email, "Total incomes");
+            List<ProfitEntity> profitEntityList = profitRepository.findByUserProfitEmail(email);
+
+        if (pte == null) {
+            throw new RuntimeException("SpendingTotalEntity not found for email: " + email);
+        }
+
+        String[] months = massive();
+
+        for (String month : months) {
+            Double sum = profitEntityList.stream()
+                    .filter(profitEntity -> profitEntity != null)
+                    .map(profitEntity -> {
+                        try {
+                            Double value = (Double) ProfitEntity.class.getMethod("get" + month).invoke(profitEntity);
+                            return value != null ? value : 0.0;
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error accessing method get" + month + " on ProfitEntity", e);
+                        }
+                    })
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+            try {
+                ProfitTotalEntity.class.getMethod("set" + month, Double.class).invoke(pte, sum);
+            } catch (Exception e) {
+                throw new RuntimeException("Error setting value for month: " + month, e);
+            }
+        }
+
+            profitTotalRepository.save(pte);
+        }
+
 
 //        Double jan = profitRepository.totalJan(email);
 //        pte.setJanuary(jan);
@@ -231,95 +271,139 @@ public class ProfitService implements ProfitServiceInterface {
 //        Double su = profitRepository.totalYear();
 //        pte.setYear(su);
 //        profitTotalRepository.save(pte);
-    }
+//    }
 
     @Override
     @SneakyThrows
     @Transactional
     public void balance(String email) {
-
         ProfitEntity profitRest = profitRepository.getProfitEntityByUserProfitEmailAndArticle(email, "Balance at the beginning");
         ProfitTotalEntity pte = profitTotalRepository.getProfitTotalEntityByUserProfitTotalEmail(email);
         SpendingTotalEntity ste = spendingTotalRepository.getProfitTotalEntityByUserSpendingTotalEmail(email);
-        double february = pte.getJanuary() - ste.getJanuary();
-//        Double february = profitRepository.restForFebruary(email);
-        if (profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() == 0
-                || profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() != 0)
-            profitRest.setFebruary(0.0);
-        else
-            profitRest.setFebruary(february);
 
-        double march = pte.getFebruary() - ste.getFebruary();
-        if (profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() == 0
-                || profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() != 0)
-            profitRest.setMarch(0.0);
-        else
-            profitRest.setMarch(march);
+        // Массивы с методами получения значений для каждого месяца
+        String[] months = massive();
 
-        double april = pte.getMarch() - ste.getMarch();
-        if (profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() == 0
-                || profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() != 0)
-            profitRest.setApril(0.0);
-        else
-            profitRest.setApril(april);
+        for (int i = 0; i < months.length - 1; i++) {
+            Double previousBalance = getFieldValue(profitRest, months[i]);
+            Double pteValue = getFieldValue(pte, months[i]);
+            Double steValue = getFieldValue(ste, months[i]);
+            Double balance = pteValue - steValue;
 
-        double may = pte.getApril() - ste.getApril();
-        if (profitRest.getApril() == 0 && may == 0 && profitRest.getMay() == 0
-                || profitRest.getApril() == 0 && may == 0 && profitRest.getMay() != 0)
-            profitRest.setMay(0.0);
-        else
-            profitRest.setMay(may);
+            if (previousBalance == 0 && balance == 0) {
+                setFieldValue(profitRest, months[i + 1], 0.0);
+            } else {
+                setFieldValue(profitRest, months[i + 1], balance);
+            }
+        }
 
-        double june = pte.getMay() - ste.getMay();
-        if (profitRest.getMay() == 0 && june == 0 && profitRest.getJune() == 0
-                || profitRest.getMay() == 0 && june == 0 && profitRest.getJune() != 0)
-            profitRest.setJune(0.0);
-        else
-            profitRest.setJune(june);
-
-        double july = pte.getJune() - ste.getJune();
-        if (profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() == 0
-                || profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() != 0)
-            profitRest.setJuly(0.0);
-        else
-            profitRest.setJuly(july);
-
-        double august = pte.getJuly() - ste.getJuly();
-        if (profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() == 0
-                || profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() != 0)
-            profitRest.setAugust(0.0);
-        else
-            profitRest.setAugust(august);
-
-        double september = pte.getAugust() - ste.getAugust();
-        if (profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() == 0
-                || profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() != 0)
-            profitRest.setSeptember(0.0);
-        else
-            profitRest.setSeptember(september);
-
-        double october = pte.getSeptember() - ste.getSeptember();
-        if (profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() == 0
-                || profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() != 0)
-            profitRest.setOctober(0.0);
-        else
-            profitRest.setOctober(october);
-
-        double november = pte.getOctober() - ste.getOctober();
-        if (profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() == 0
-                || profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() != 0)
-            profitRest.setNovember(0.0);
-        else
-            profitRest.setNovember(november);
-
-        double december = pte.getNovember() - ste.getNovember();
-        if (profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() == 0
-                || profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() != 0)
-            profitRest.setDecember(0.0);
-        else
-            profitRest.setDecember(december);
         profitRepository.save(profitRest);
     }
+
+    // Метод для получения значения поля по названию месяца
+    private Double getFieldValue(Object obj, String month) {
+        try {
+            Method getter = obj.getClass().getMethod("get" + month);
+            return (Double) getter.invoke(obj);
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting field value for month: " + month, e);
+        }
+    }
+
+    // Метод для установки значения поля по названию месяца
+    private void setFieldValue(Object obj, String month, double value) {
+        try {
+            Method setter = obj.getClass().getMethod("set" + month, Double.class);
+            setter.invoke(obj, value);
+        } catch (Exception e) {
+            throw new RuntimeException("Error setting field value for month: " + month, e);
+        }
+    }
+
+
+//    public void balance(String email) {
+//
+//        ProfitEntity profitRest = profitRepository.getProfitEntityByUserProfitEmailAndArticle(email, "Balance at the beginning");
+//        ProfitTotalEntity pte = profitTotalRepository.getProfitTotalEntityByUserProfitTotalEmail(email);
+//        SpendingTotalEntity ste = spendingTotalRepository.getProfitTotalEntityByUserSpendingTotalEmail(email);
+//        double february = pte.getJanuary() - ste.getJanuary();
+//        if (profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() == 0
+//                || profitRest.getJanuary() == 0 && february == 0 && profitRest.getFebruary() != 0)
+//            profitRest.setFebruary(0.0);
+//        else
+//            profitRest.setFebruary(february);
+//
+//        double march = pte.getFebruary() - ste.getFebruary();
+//        if (profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() == 0
+//                || profitRest.getFebruary() == 0 && march == 0 && profitRest.getMarch() != 0)
+//            profitRest.setMarch(0.0);
+//        else
+//            profitRest.setMarch(march);
+//
+//        double april = pte.getMarch() - ste.getMarch();
+//        if (profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() == 0
+//                || profitRest.getMarch() == 0 && april == 0 && profitRest.getApril() != 0)
+//            profitRest.setApril(0.0);
+//        else
+//            profitRest.setApril(april);
+//
+//        double may = pte.getApril() - ste.getApril();
+//        if (profitRest.getApril() == 0 && may == 0 && profitRest.getMay() == 0
+//                || profitRest.getApril() == 0 && may == 0 && profitRest.getMay() != 0)
+//            profitRest.setMay(0.0);
+//        else
+//            profitRest.setMay(may);
+//
+//        double june = pte.getMay() - ste.getMay();
+//        if (profitRest.getMay() == 0 && june == 0 && profitRest.getJune() == 0
+//                || profitRest.getMay() == 0 && june == 0 && profitRest.getJune() != 0)
+//            profitRest.setJune(0.0);
+//        else
+//            profitRest.setJune(june);
+//
+//        double july = pte.getJune() - ste.getJune();
+//        if (profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() == 0
+//                || profitRest.getJune() == 0 && july == 0 && profitRest.getJuly() != 0)
+//            profitRest.setJuly(0.0);
+//        else
+//            profitRest.setJuly(july);
+//
+//        double august = pte.getJuly() - ste.getJuly();
+//        if (profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() == 0
+//                || profitRest.getJuly() == 0 && august == 0 && profitRest.getAugust() != 0)
+//            profitRest.setAugust(0.0);
+//        else
+//            profitRest.setAugust(august);
+//
+//        double september = pte.getAugust() - ste.getAugust();
+//        if (profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() == 0
+//                || profitRest.getAugust() == 0 && september == 0 && profitRest.getSeptember() != 0)
+//            profitRest.setSeptember(0.0);
+//        else
+//            profitRest.setSeptember(september);
+//
+//        double october = pte.getSeptember() - ste.getSeptember();
+//        if (profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() == 0
+//                || profitRest.getSeptember() == 0 && october == 0 && profitRest.getOctober() != 0)
+//            profitRest.setOctober(0.0);
+//        else
+//            profitRest.setOctober(october);
+//
+//        double november = pte.getOctober() - ste.getOctober();
+//        if (profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() == 0
+//                || profitRest.getOctober() == 0 && november == 0 && profitRest.getNovember() != 0)
+//            profitRest.setNovember(0.0);
+//        else
+//            profitRest.setNovember(november);
+//
+//        double december = pte.getNovember() - ste.getNovember();
+//        if (profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() == 0
+//                || profitRest.getNovember() == 0 && december == 0 && profitRest.getDecember() != 0)
+//            profitRest.setDecember(0.0);
+//        else
+//            profitRest.setDecember(december);
+//        profitRepository.save(profitRest);
+//    }
 
     @Override
     @Transactional
@@ -346,4 +430,6 @@ public class ProfitService implements ProfitServiceInterface {
         }
         countSumLine(email);
     }
+
+
 }
